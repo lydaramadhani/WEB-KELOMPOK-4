@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Gate Scanner Check-in Tiket - Summer Pop Festival{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+
+      <div class="cute-card p-4 p-md-5">
+
+        <div class="text-center mb-4">
+          <div class="rounded-circle bg-warning bg-opacity-25 p-3 d-inline-flex mb-3 fs-1 text-orange">
+            🔍
+          </div>
+          <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">Gate Scanner Check-in Tiket</h3>
+          <p class="text-muted small">Validasi E-Ticket pengunjung di pintu masuk venue Summer Pop Festival</p>
+        </div>
+
+        <!-- Scanner Form -->
+        <form method="post" action="{% url 'organizer_ticket_validation' %}" class="mb-4">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label text-dark fw-bold">Kode Unik Tiket / Hasil Scan QR Code</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-white border-2 border-end-0 text-orange fs-5" style="border-color: #ffe3d1;"><i class="fa-solid fa-qrcode"></i></span>
+              {{ form.ticket_code }}
+              <button type="submit" class="btn btn-coral px-4">
+                Check-in 🔍
+              </button>
+            </div>
+            <small class="text-muted mt-1.5 d-block">Masukkan kode tiket seperti <code>TKT-20260724-XXXX</code> atau gunakan USB Scanner Barcode.</small>
+          </div>
+        </form>
+
+        <!-- Validation Result Display -->
+        {% if result %}
+          {% if result.success %}
+            <div class="p-4 rounded-4 bg-success bg-opacity-15 border border-success text-center mb-4">
+              <div class="display-3 mb-2">🎉</div>
+              <h3 class="fw-extrabold text-success mb-2" style="font-family: 'Fredoka', sans-serif;">TIKET VALID & CHECK-IN BERHASIL!</h3>
+              <p class="fs-5 text-dark mb-0">{{ result.message }}</p>
+            </div>
+          {% elif result.already_checked_in %}
+            <div class="p-4 rounded-4 bg-warning bg-opacity-25 border border-warning text-center mb-4">
+              <div class="display-3 mb-2">⚠️</div>
+              <h3 class="fw-extrabold text-warning mb-2" style="font-family: 'Fredoka', sans-serif;">PERINGATAN: TIKET SUDAH DIPAKAI!</h3>
+              <p class="fs-5 text-dark mb-0">{{ result.message }}</p>
+            </div>
+          {% else %}
+            <div class="p-4 rounded-4 bg-danger bg-opacity-15 border border-danger text-center mb-4">
+              <div class="display-3 mb-2">🚫</div>
+              <h3 class="fw-extrabold text-danger mb-2" style="font-family: 'Fredoka', sans-serif;">TIKET TIDAK VALID / GAGAL</h3>
+              <p class="fs-5 text-dark mb-0">{{ result.message }}</p>
+            </div>
+          {% endif %}
+
+          {% if scanned_ticket %}
+            <div class="p-3.5 rounded-4 bg-light border border-light text-start">
+              <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">Detail E-Ticket Scanned</h5>
+              <div class="row g-2 small">
+                <div class="col-6"><strong>Kode Tiket:</strong> <span class="text-orange font-monospace">{{ scanned_ticket.ticket_code }}</span></div>
+                <div class="col-6"><strong>Event Tour:</strong> <span class="text-dark">{{ scanned_ticket.order.event.title }}</span></div>
+                <div class="col-6"><strong>Nama Pengunjung:</strong> <span class="text-dark">{{ scanned_ticket.attendee_name }}</span></div>
+                <div class="col-6"><strong>Email:</strong> <span class="text-dark">{{ scanned_ticket.attendee_email }}</span></div>
+                <div class="col-6"><strong>Kode Pesanan:</strong> <span class="text-dark">{{ scanned_ticket.order.order_code }}</span></div>
+                <div class="col-6"><strong>Waktu Check-in:</strong> <span class="text-success font-weight-bold">{{ scanned_ticket.checked_in_at|date:"d M Y, H:i:s"|default:"Belum" }}</span></div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

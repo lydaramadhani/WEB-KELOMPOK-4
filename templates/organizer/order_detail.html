@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Detail Order {{ order.order_code }} - Eventify{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="mb-4">
+    <a href="{% url 'organizer_order_list' %}" class="btn btn-outline-glass">
+      <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar Pesanan
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <!-- Order Summary -->
+    <div class="col-md-7">
+      <div class="glass-card p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold text-white mb-0">Rincian Pesanan</h4>
+          <span class="badge-status badge-{{ order.payment_status|lower }}">
+            {{ order.get_payment_status_display }}
+          </span>
+        </div>
+
+        <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-25 mb-4">
+          <div class="row g-3">
+            <div class="col-6">
+              <small class="text-muted d-block">Kode Pesanan</small>
+              <strong class="text-info font-monospace fs-5">{{ order.order_code }}</strong>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block">Tanggal Transaksi</small>
+              <strong class="text-white">{{ order.created_at|date:"d F Y, H:i" }} WIB</strong>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block">Metode Pembayaran</small>
+              <strong class="text-white">{{ order.get_payment_method_display }}</strong>
+            </div>
+            <div class="col-6">
+              <small class="text-muted d-block">Total Pembayaran</small>
+              <strong class="text-success fs-4">Rp {{ order.total_amount|floatformat:0 }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buyer & Event info -->
+        <h5 class="fw-bold text-white mb-3">Informasi Event & Pembeli</h5>
+        <div class="vstack gap-2 small text-muted mb-4">
+          <div><i class="fa-solid fa-calendar text-info me-2"></i> Event: <strong class="text-white">{{ order.event.title }}</strong></div>
+          <div><i class="fa-solid fa-user text-primary me-2"></i> Akun Pemesan: <strong class="text-white">{{ order.buyer.get_full_name|default:order.buyer.username }} ({{ order.buyer.email }})</strong></div>
+          <div><i class="fa-solid fa-ticket text-warning me-2"></i> Kuantitas: <strong class="text-white">{{ order.quantity }} lembar tiket</strong></div>
+          {% if order.notes %}
+            <div class="p-2 rounded bg-dark border border-secondary border-opacity-25 mt-2"><i class="fa-solid fa-note-sticky text-secondary me-2"></i> Catatan: {{ order.notes }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Action Form: Approve or Reject -->
+        {% if order.payment_status != 'PAID' %}
+          <form method="post" class="p-3 rounded-3 border border-warning border-opacity-30 bg-warning bg-opacity-10">
+            {% csrf_token %}
+            <h6 class="fw-bold text-warning mb-2"><i class="fa-solid fa-gavel me-1"></i> Aksi Pengesahan Pembayaran</h6>
+            <p class="small text-muted mb-3">Pilihlah pengesahan pembayaran di bawah ini. Menyetujui pesanan akan secara otomatis mengaktifkan & menerbitkan E-Ticket dengan QR Code untuk pembeli.</p>
+
+            <div class="d-flex gap-2">
+              <button type="submit" name="action" value="approve" class="btn btn-success flex-grow-1 py-2">
+                <i class="fa-solid fa-circle-check me-1"></i> Approve / Setujui Pembayaran
+              </button>
+              <button type="submit" name="action" value="reject" class="btn btn-danger py-2">
+                <i class="fa-solid fa-circle-xmark me-1"></i> Tolak
+              </button>
+            </div>
+          </form>
+        {% endif %}
+
+        <!-- Generated Tickets List if PAID -->
+        {% if order.tickets.exists %}
+          <div class="mt-4 pt-4 border-top border-secondary border-opacity-25">
+            <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-qrcode text-success me-2"></i> E-Ticket Yang Telah Diterbitkan</h5>
+            <div class="vstack gap-2">
+              {% for ticket in order.tickets.all %}
+                <div class="p-3 rounded bg-dark border border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong class="font-monospace text-info me-2">{{ ticket.ticket_code }}</strong>
+                    <span class="text-white">{{ ticket.attendee_name }}</span>
+                  </div>
+                  <div>
+                    {% if ticket.is_checked_in %}
+                      <span class="badge bg-secondary">Checked-in ({{ ticket.checked_in_at|date:"H:i" }})</span>
+                    {% else %}
+                      <span class="badge bg-success bg-opacity-25 text-success">Aktif</span>
+                    {% endif %}
+                    <a href="{% url 'ticket_detail' ticket_code=ticket.ticket_code %}" target="_blank" class="btn btn-outline-glass btn-sm ms-2">
+                      <i class="fa-solid fa-eye"></i>
+                    </a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- Payment Proof Image Card -->
+    <div class="col-md-5">
+      <div class="glass-card p-4 text-center">
+        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-image text-info me-2"></i> Bukti Transfer</h5>
+        {% if order.payment_proof %}
+          <a href="{{ order.payment_proof.url }}" target="_blank">
+            <img src="{{ order.payment_proof.url }}" class="img-fluid rounded-3 border border-secondary border-opacity-25 shadow-sm" alt="Bukti Transfer">
+          </a>
+          <small class="text-muted d-block mt-2">Klik gambar untuk melihat resolusi penuh</small>
+        {% else %}
+          <div class="p-5 rounded bg-dark border border-secondary border-opacity-25 text-muted">
+            <i class="fa-solid fa-file-image display-3 opacity-25 mb-2"></i>
+            <div>Belum ada bukti pembayaran yang diunggah.</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

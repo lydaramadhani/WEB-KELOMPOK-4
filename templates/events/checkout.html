@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Checkout Tiket - {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+
+      <div class="cute-card p-4 p-md-5">
+        <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">
+          🛒 Form Pemesanan Tiket
+        </h3>
+        <p class="text-muted small mb-4">Summer Pop Festival 2026 Tour</p>
+
+        <!-- Event Summary Box -->
+        <div class="p-3 rounded-4 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center gap-3">
+          {% if event.poster %}
+            <img src="{{ event.poster.url }}" width="80" height="80" class="rounded-3 object-fit-cover" alt="{{ event.title }}">
+          {% else %}
+            <div class="rounded-3 p-3 text-white text-center" style="width: 80px; height: 80px; background: linear-gradient(135deg, #ff8c42, #ff6b5c);">
+              <span class="fs-2">🎵</span>
+            </div>
+          {% endif %}
+          <div>
+            <h5 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">{{ event.title }}</h5>
+            <div class="text-muted small"><i class="fa-regular fa-clock me-1"></i> {{ event.start_date|date:"d M Y, H:i" }} WIB</div>
+            <div class="text-muted small"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ event.venue }}</div>
+          </div>
+        </div>
+
+        <form method="post" action="{% url 'checkout' slug=event.slug %}">
+          {% csrf_token %}
+
+          <!-- Ticket Quantity -->
+          <div class="mb-4">
+            <label class="form-label text-dark fw-bold">Jumlah Tiket</label>
+            <div class="row align-items-center">
+              <div class="col-md-5">
+                {{ form.quantity }}
+              </div>
+              <div class="col-md-7 mt-2 mt-md-0 text-md-end">
+                <small class="text-muted d-block fw-semibold">Harga per lembar:</small>
+                <span id="ticket_price_unit" data-price="{{ event.ticket_price }}" class="fw-bold text-orange fs-5" style="font-family: 'Fredoka', sans-serif;">
+                  Rp {{ event.ticket_price|floatformat:0 }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendee Information -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">👤 Data Pemegang Tiket</h5>
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-semibold">Nama Pemegang Tiket</label>
+              {{ form.attendee_name }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-semibold">Email Pengiriman E-Ticket</label>
+              {{ form.attendee_email }}
+            </div>
+          </div>
+
+          <!-- Payment Method Selection -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">💳 Pilih Metode Pembayaran</h5>
+
+            <div class="vstack gap-2">
+              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
+                <input type="radio" name="payment_method" value="QRIS" checked class="form-check-input">
+                <span class="fs-2">📲</span>
+                <div>
+                  <strong class="text-dark d-block">QRIS Instant Payment</strong>
+                  <small class="text-muted">Scan QRIS via m-Banking, GoPay, OVO, Dana, ShopeePay</small>
+                </div>
+              </label>
+
+              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
+                <input type="radio" name="payment_method" value="BANK_TRANSFER" class="form-check-input">
+                <span class="fs-2">🏦</span>
+                <div>
+                  <strong class="text-dark d-block">Transfer Bank (BCA / BNI / BRI)</strong>
+                  <small class="text-muted">Transfer manual ke rekening resmi panitia Summer Pop</small>
+                </div>
+              </label>
+
+              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
+                <input type="radio" name="payment_method" value="EWALLET" class="form-check-input">
+                <span class="fs-2">👛</span>
+                <div>
+                  <strong class="text-dark d-block">E-Wallet Direct</strong>
+                  <small class="text-muted">Transfer GoPay / OVO / DANA</small>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Total Calculation -->
+          <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center justify-content-between">
+            <span class="text-dark font-weight-bold fs-5" style="font-family: 'Fredoka', sans-serif;">Total Tagihan</span>
+            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|floatformat:0 }}</span>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-coral btn-lg flex-grow-1 py-3 text-white fs-6">
+              💳 Lanjutkan Pembayaran
+            </button>
+            <a href="{% url 'event_detail' slug=event.slug %}" class="btn btn-outline-cute py-3">Batal</a>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

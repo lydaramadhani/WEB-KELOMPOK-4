@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Akun - Summer Pop Festival 2026{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-md-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+
+      <div class="cute-card overflow-hidden p-0 shadow-lg border-0">
+        <div class="row g-0">
+
+          <!-- Left Side: Banner Card -->
+          <div class="col-md-5 p-4 p-md-5 d-flex flex-column justify-content-between position-relative" style="background: linear-gradient(135deg, #ffb703 0%, #ff8c42 50%, #ff6b5c 100%); color: #ffffff;">
+            <div>
+              <h2 class="font-weight-black text-white mb-2" style="font-family: 'Fredoka', sans-serif;">
+                SUMMER POP FESTIVAL
+              </h2>
+              <div class="fs-6 font-weight-bold mb-3" style="color: #fff3c4;">
+                🌈 Join The Festival Family ✨
+              </div>
+              <p class="text-white opacity-90 small leading-relaxed mb-4">
+                Daftar akun sekarang untuk membeli tiket konser di berbagai kota, mendapatkan promo early bird, dan akses E-Ticket QR Code instan!
+              </p>
+            </div>
+
+            <div class="p-3 rounded-4 bg-white text-dark shadow-sm">
+              <div class="fw-bold text-orange small mb-1">🎫 2026 Multi-City Tour</div>
+              <div class="small text-muted">Jakarta • Bali • Bandung • Jogja • Surabaya</div>
+            </div>
+          </div>
+
+          <!-- Right Side: Register Form -->
+          <div class="col-md-7 p-4 p-md-5 bg-white">
+            <div class="mb-4">
+              <h2 class="font-weight-black mb-1" style="font-family: 'Fredoka', sans-serif; color: #ff8c42;">
+                Daftar Akun Baru 🎵
+              </h2>
+              <p class="text-muted small">Lengkapi data Anda di bawah ini</p>
+            </div>
+
+            <form method="post" action="{% url 'register' %}">
+              {% csrf_token %}
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Username</label>
+                  {{ form.username }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Nama Lengkap</label>
+                  {{ form.full_name }}
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Email</label>
+                  {{ form.email }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Nomor WhatsApp / HP</label>
+                  {{ form.phone }}
+                </div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Kata Sandi</label>
+                  {{ form.password }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small fw-semibold">Konfirmasi Kata Sandi</label>
+                  {{ form.confirm_password }}
+                </div>
+              </div>
+
+              <div class="p-3 mb-4 rounded-4 bg-light border border-warning border-opacity-50">
+                <div class="form-check mb-1">
+                  {{ form.is_organizer }}
+                  <label class="form-check-label text-orange font-weight-bold" for="{{ form.is_organizer.id_for_label }}">
+                    ✨ Daftar sebagai Event Organizer / Panitia
+                  </label>
+                </div>
+                <div class="mt-2">
+                  {{ form.organization_name }}
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-coral w-100 py-3 mb-3 text-white fs-6">
+                Daftar Akun Sekarang
+              </button>
+
+              <div class="text-center text-muted small">
+                Sudah memiliki akun? <a href="{% url 'login' %}" class="text-orange text-decoration-none fw-bold">Masuk di Sini</a>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

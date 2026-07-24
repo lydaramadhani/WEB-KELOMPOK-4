@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Laporan Rekapitulasi - Summer Pop Festival{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">📄 Laporan Rekapitulasi Penjualan & Pendapatan</h3>
+      <p class="text-muted small mb-0">Summer Pop Festival 2026 Multi-City Tour</p>
+    </div>
+    <button onclick="window.print()" class="btn btn-coral no-print">
+      🖨️ Cetak Laporan (PDF)
+    </button>
+  </div>
+
+  <!-- Filter Form -->
+  <div class="cute-card p-3 mb-4 no-print">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label text-muted small mb-1 fw-bold">Filter Tour Event</label>
+        <select name="event_id" class="form-select">
+          <option value="">Semua Tour Event</option>
+          {% for ev in events %}
+            <option value="{{ ev.id }}" {% if selected_event_id == ev.id|stringformat:"s" %}selected{% endif %}>
+              {{ ev.title }} ({{ ev.start_date|date:"d/m/Y" }})
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label text-muted small mb-1 fw-bold">Dari Tanggal</label>
+        <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label text-muted small mb-1 fw-bold">Sampai Tanggal</label>
+        <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
+      </div>
+
+      <div class="col-md-2 mt-auto">
+        <button type="submit" class="btn btn-coral w-100 py-2">
+          Filter 🔍
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Printable Report Card -->
+  <div class="p-4 cute-card mb-4 print-section">
+    <div class="text-center mb-4">
+      <h2 class="fw-extrabold text-orange mb-1" style="font-family: 'Fredoka', sans-serif;">LAPORAN REKAPITULASI PENJUALAN TIKET</h2>
+      <h5 class="text-dark mb-1 fw-bold">SUMMER POP FESTIVAL 2026 (KELOMPOK 4 KELAS B)</h5>
+      <p class="text-muted small mb-0">Dicetak pada: {{ now|date:"d F Y H:i:s" }} WIB</p>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="row g-3 text-center mb-4">
+      <div class="col-3">
+        <div class="p-3 rounded-4 bg-light border border-light">
+          <small class="text-muted d-block fw-bold">Tiket Terjual</small>
+          <strong class="fs-4 text-dark" style="font-family: 'Fredoka', sans-serif;">{{ total_sales_count }} Lembar</strong>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="p-3 rounded-4 bg-light border border-light">
+          <small class="text-muted d-block fw-bold">Total Pendapatan</small>
+          <strong class="fs-4 text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ total_income|floatformat:0 }}</strong>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="p-3 rounded-4 bg-light border border-light">
+          <small class="text-muted d-block fw-bold">Pengunjung Check-in</small>
+          <strong class="fs-4 text-success" style="font-family: 'Fredoka', sans-serif;">{{ total_checked_in }} Orang</strong>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="p-3 rounded-4 bg-light border border-light">
+          <small class="text-muted d-block fw-bold">Tingkat Kehadiran</small>
+          <strong class="fs-4 text-warning" style="font-family: 'Fredoka', sans-serif;">{{ attendance_percentage }}%</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">Rincian Transaksi Lunas</h5>
+
+    {% if orders %}
+      <div class="table-responsive">
+        <table class="table table-cute align-middle mb-0">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Kode Order</th>
+              <th>Tanggal</th>
+              <th>Nama Pembeli</th>
+              <th>Event Tour</th>
+              <th>Qty</th>
+              <th>Metode</th>
+              <th class="text-end">Total Pembayaran</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td class="font-monospace text-orange fw-bold">{{ order.order_code }}</td>
+                <td class="small">{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                <td class="fw-semibold text-dark">{{ order.buyer.get_full_name|default:order.buyer.username }}</td>
+                <td>{{ order.event.title }}</td>
+                <td>{{ order.quantity }} lembar</td>
+                <td><small class="text-muted">{{ order.get_payment_method_display }}</small></td>
+                <td class="text-end fw-bold text-orange">Rp {{ order.total_amount|floatformat:0 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="fw-bold fs-6 text-dark border-top border-warning">
+              <td colspan="5" class="text-end">TOTAL REKAPITULASI:</td>
+              <td class="text-orange">{{ total_sales_count }} lembar</td>
+              <td></td>
+              <td class="text-end text-orange">Rp {{ total_income|floatformat:0 }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted text-center py-4">Belum ada transaksi lunas sesuai periode filter yang dipilih.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

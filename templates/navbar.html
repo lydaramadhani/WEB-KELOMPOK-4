@@ -1,0 +1,87 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg sticky-top soft-nav py-3">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+      <div class="rounded-circle p-2 d-flex align-items-center justify-content-center shadow-sm" style="background: linear-gradient(135deg, #ff7034, #ff5252); width: 42px; height: 42px;">
+        <i class="fa-solid fa-music text-white fs-5"></i>
+      </div>
+      <div>
+        <span class="brand-title">SUMMER POP FESTIVAL</span>
+        <small class="d-block text-orange font-weight-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">🌈 Feel The Beat, Enjoy The Moment ✨</small>
+      </div>
+    </a>
+
+    <button class="navbar-toggler border-0 text-orange" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <i class="fa-solid fa-bars fs-4"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+        <li class="nav-item">
+          <a class="nav-link text-dark fw-bold px-3" href="{% url 'home' %}">
+            🌴 Jadwal & Venue Tour
+          </a>
+        </li>
+
+        {% if user.is_authenticated %}
+          <!-- Hide Tiket Saya for Organizers/Admin since ticket buying is strictly for Peserta -->
+          {% if not user.profile.is_organizer and not user.is_staff %}
+            <li class="nav-item">
+              <a class="nav-link text-dark fw-bold px-3" href="{% url 'my_tickets' %}">
+                🎫 Tiket Saya
+              </a>
+            </li>
+          {% endif %}
+
+          {% if user.profile.is_organizer or user.is_staff %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-orange fw-bold px-3" href="#" id="eoDropdown" role="button" data-bs-toggle="dropdown">
+                {% if user.is_staff %}👑 Master Admin Panel{% else %}✨ Panel Organizer (EO){% endif %}
+              </a>
+              <ul class="dropdown-menu cute-card border-0 shadow-lg mt-2 p-2">
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_dashboard' %}">📊 Dashboard Analytics</a></li>
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_order_list' %}">💳 Verifikasi Pembayaran Masuk</a></li>
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_event_list' %}">📅 Kelola Tour Event</a></li>
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_category_list' %}">🏷️ Kelola Kategori</a></li>
+                <li><hr class="dropdown-divider opacity-25"></li>
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold text-success" href="{% url 'organizer_ticket_validation' %}">🔍 Scanner Check-in Gate</a></li>
+                <li><a class="dropdown-item rounded-3 py-2 fw-semibold text-danger" href="{% url 'organizer_reports' %}">📄 Laporan Rekapitulasi Financial</a></li>
+              </ul>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <div class="dropdown">
+            <button class="btn btn-soft-yellow dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+              <div class="rounded-circle bg-white text-orange fw-bold d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
+                {{ user.username|slice:":1"|upper }}
+              </div>
+              <span class="d-none d-md-inline">{{ user.first_name|default:user.username }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end cute-card border-0 shadow-lg mt-2 p-2">
+              <li class="px-3 py-2 border-bottom border-light">
+                <div class="fw-bold text-dark">{{ user.first_name|default:user.username }}</div>
+                <small class="text-muted">{{ user.email }}</small>
+                {% if user.is_staff %}
+                  <div><span class="badge bg-danger text-white mt-1">Master Admin</span></div>
+                {% elif user.profile.is_organizer %}
+                  <div><span class="badge bg-warning text-dark mt-1">Event Organizer</span></div>
+                {% else %}
+                  <div><span class="badge bg-info text-white mt-1">Peserta / Buyer</span></div>
+                {% endif %}
+              </li>
+              <li><a class="dropdown-item rounded-3 py-2 fw-semibold mt-1" href="{% url 'profile' %}">👤 Edit Profil</a></li>
+              <li><a class="dropdown-item rounded-3 py-2 fw-semibold text-danger" href="{% url 'logout' %}">🚪 Keluar</a></li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-outline-cute">Masuk</a>
+          <a href="{% url 'register' %}" class="btn btn-coral">Daftar Akun</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

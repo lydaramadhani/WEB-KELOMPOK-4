@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Kelola Kategori Event - Eventify{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row g-4">
+    <!-- Add Category Form -->
+    <div class="col-md-4">
+      <div class="glass-card p-4">
+        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle text-info me-2"></i> Tambah Kategori</h4>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label text-light small fw-semibold">Nama Kategori</label>
+            {{ form.name }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-light small fw-semibold">FontAwesome Icon Class</label>
+            {{ form.icon }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-light small fw-semibold">Deskripsi</label>
+            {{ form.description }}
+          </div>
+          <button type="submit" class="btn btn-gradient w-100 py-2">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Kategori
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Category List Table -->
+    <div class="col-md-8">
+      <div class="glass-card p-4">
+        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-tags text-primary me-2"></i> Daftar Kategori Event</h4>
+        <div class="table-responsive">
+          <table class="table table-glass align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>Nama Kategori</th>
+                <th>Slug</th>
+                <th>Jumlah Event</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cat in categories %}
+                <tr>
+                  <td><i class="fa-solid {{ cat.icon }} fs-4 text-info"></i></td>
+                  <td class="fw-bold text-white">{{ cat.name }}</td>
+                  <td class="font-monospace text-muted small">{{ cat.slug }}</td>
+                  <td><span class="badge bg-primary bg-opacity-25 text-primary">{{ cat.events.count }} Event</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

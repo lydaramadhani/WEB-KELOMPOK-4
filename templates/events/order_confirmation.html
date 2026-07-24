@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Konfirmasi Pembayaran - {{ order.order_code }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <div class="cute-card p-4 p-md-5">
+
+        <div class="text-center mb-4">
+          {% if order.payment_status == 'PAID' %}
+            <div class="rounded-circle bg-success bg-opacity-15 p-3 d-inline-flex mb-2 text-success fs-1">
+              🎉
+            </div>
+            <h3 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">Pembayaran Disetujui!</h3>
+            <p class="text-muted small">E-Ticket QR Code Anda telah terbit dan dapat langsung digunakan.</p>
+          {% else %}
+            <div class="rounded-circle bg-warning bg-opacity-25 p-3 d-inline-flex mb-2 text-warning fs-1">
+              ⏳
+            </div>
+            <h3 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">Menunggu Verifikasi Organizer</h3>
+            <p class="text-muted small">Unggah bukti pembayaran Anda di bawah ini. Data akan langsung terkirim ke Organizer & Admin untuk disetujui.</p>
+          {% endif %}
+        </div>
+
+        <!-- Order Info Card -->
+        <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4">
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block fw-bold">Kode Pesanan</small>
+              <strong class="text-orange font-monospace">{{ order.order_code }}</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block fw-bold">Event Tour</small>
+              <strong class="text-dark">{{ order.event.title|truncatewords:3 }}</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block fw-bold">Jumlah Tiket</small>
+              <strong class="text-dark">{{ order.quantity }} Lembar</strong>
+            </div>
+            <div class="col-6 col-md-3">
+              <small class="text-muted d-block fw-bold">Total Tagihan</small>
+              <strong class="text-orange fs-5" style="font-family: 'Outfit', sans-serif;">Rp {{ order.total_amount|floatformat:0 }}</strong>
+            </div>
+          </div>
+        </div>
+
+        {% if order.payment_status == 'PENDING' %}
+
+          <!-- Payment Instructions -->
+          <div class="p-4 rounded-4 border border-warning bg-light mb-4">
+            <h5 class="fw-bold text-orange mb-3" style="font-family: 'Outfit', sans-serif;">
+              💳 Rekening & QRIS Pembayaran ({{ order.get_payment_method_display }})
+            </h5>
+
+            {% if order.payment_method == 'QRIS' %}
+              <div class="text-center py-2">
+                <div class="bg-white p-3 d-inline-block rounded-4 mb-2 shadow-sm border border-warning">
+                  <i class="fa-solid fa-qrcode text-dark display-1"></i>
+                  <div class="text-orange fw-bold small mt-1">QRIS NATIONAL STANDARD</div>
+                </div>
+                <p class="small text-muted mb-0">Scan QRIS di atas menggunakan m-Banking atau E-Wallet pilihan Anda.</p>
+              </div>
+            {% elif order.payment_method == 'BANK_TRANSFER' %}
+              <div class="vstack gap-2 small">
+                <div class="p-2.5 rounded-3 bg-white border border-light d-flex justify-content-between align-items-center">
+                  <span><strong>Bank BCA:</strong> 8830-1234-5678 a/n Summer Pop Festival</span>
+                  <span class="badge bg-warning text-dark">Salin</span>
+                </div>
+                <div class="p-2.5 rounded-3 bg-white border border-light d-flex justify-content-between align-items-center">
+                  <span><strong>Bank BNI:</strong> 0987-6543-2100 a/n Summer Pop Festival</span>
+                  <span class="badge bg-warning text-dark">Salin</span>
+                </div>
+              </div>
+            {% else %}
+              <div class="small text-dark">
+                Silakan transfer ke nomor E-Wallet resmi panitia: <strong>0812-3456-7890 (GoPay / OVO / DANA)</strong>.
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Strict Payment Proof Upload Form (No Instant Confirm Button for Customer) -->
+          <form method="post" enctype="multipart/form-data" action="{% url 'order_confirmation' order_code=order.order_code %}" class="mb-3">
+            {% csrf_token %}
+
+            <h5 class="fw-bold text-dark mb-3" style="font-family: 'Outfit', sans-serif;">📤 Upload Bukti Transfer / Pembayaran</h5>
+
+            <div class="mb-3">
+              <label class="form-label text-muted small fw-bold">Bukti Pembayaran (Gambar JPG/PNG)</label>
+              {{ form.payment_proof }}
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label text-muted small fw-bold">Catatan Tambahan / Rekening Pengirim (Opsional)</label>
+              {{ form.notes }}
+            </div>
+
+            <div class="p-3 rounded-3 bg-warning bg-opacity-15 border border-warning mb-4">
+              <small class="text-orange fw-bold d-block mb-1">ℹ️ Alur Verifikasi Organizer:</small>
+              <small class="text-muted">Begitu Anda mengunggah bukti pembayaran, pesanan akan dikirim ke Organizer. Setelah Organizer memverifikasi bukti Anda, E-Ticket ber-QR Code akan terbit otomatis di menu <strong>Tiket Saya</strong>.</small>
+            </div>
+
+            <button type="submit" class="btn btn-coral w-100 py-3 text-white fs-6 font-weight-bold">
+              📤 Unggah Bukti Pembayaran Ke Organizer
+            </button>
+          </form>
+
+        {% else %}
+          <div class="text-center mt-4">
+            <a href="{% url 'my_tickets' %}" class="btn btn-coral btn-lg px-4 py-3 text-white fs-6">
+              🎫 Lihat E-Ticket Saya
+            </a>
+          </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

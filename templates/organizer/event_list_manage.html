@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Kelola Event - Organizer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-calendar-days text-primary me-2"></i> Manajemen Event</h3>
+      <p class="text-muted small mb-0">Tambah, ubah, dan pantau seluruh daftar event milik Anda</p>
+    </div>
+    <a href="{% url 'organizer_event_create' %}" class="btn btn-gradient">
+      <i class="fa-solid fa-plus me-1"></i> Tambah Event Baru
+    </a>
+  </div>
+
+  <div class="glass-card p-4">
+    {% if events %}
+      <div class="table-responsive">
+        <table class="table table-glass align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Poster</th>
+              <th>Judul Event</th>
+              <th>Kategori</th>
+              <th>Waktu Event</th>
+              <th>Harga Tiket</th>
+              <th>Penjualan</th>
+              <th>Status</th>
+              <th class="text-end">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in events %}
+              <tr>
+                <td style="width: 70px;">
+                  {% if event.poster %}
+                    <img src="{{ event.poster.url }}" width="50" height="50" class="rounded object-fit-cover" alt="">
+                  {% else %}
+                    <div class="bg-dark rounded p-2 text-center text-muted"><i class="fa-solid fa-image"></i></div>
+                  {% endif %}
+                </td>
+                <td class="fw-bold text-white">
+                  <a href="{% url 'event_detail' slug=event.slug %}" class="text-white text-decoration-none" target="_blank">
+                    {{ event.title }}
+                  </a>
+                  <small class="d-block text-muted">{{ event.venue }}</small>
+                </td>
+                <td><span class="badge bg-dark text-info border border-secondary">{{ event.category.name }}</span></td>
+                <td class="small">{{ event.start_date|date:"d M Y, H:i" }}</td>
+                <td class="fw-semibold">Rp {{ event.ticket_price|floatformat:0 }}</td>
+                <td>
+                  <span class="fw-bold text-white">{{ event.quota_sold }}</span> / {{ event.total_quota }}
+                </td>
+                <td>
+                  <span class="badge-status badge-{{ event.status|lower }}">
+                    {{ event.get_status_display }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="btn-group btn-group-sm">
+                    <a href="{% url 'organizer_event_edit' pk=event.pk %}" class="btn btn-outline-glass text-warning" title="Edit">
+                      <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <a href="{% url 'organizer_event_delete' pk=event.pk %}" class="btn btn-outline-glass text-danger" title="Hapus">
+                      <i class="fa-solid fa-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-calendar-plus fs-1 text-muted mb-3"></i>
+        <h4 class="text-white fw-bold">Belum Ada Event Ditambahkan</h4>
+        <p class="text-muted">Klik tombol di atas untuk mempublikasikan event perdana Anda.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Verifikasi Pesanan & Pembayaran - Summer Pop Festival{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">💳 Verifikasi Pesanan & Pembayaran Tiket</h3>
+      <p class="text-muted small mb-0">Tinjau bukti pembayaran transfer/QRIS dari pembeli dan terbitkan E-Ticket QR Code</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="cute-card p-3 mb-4">
+    <form method="get" class="row g-2">
+      <div class="col-md-5">
+        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Cari Kode Order / Nama Pembeli...">
+      </div>
+      <div class="col-md-4">
+        <select name="status" class="form-select">
+          <option value="">Semua Status Pembayaran</option>
+          <option value="PENDING" {% if selected_status == 'PENDING' %}selected{% endif %}>Menunggu Verifikasi (Pending)</option>
+          <option value="PAID" {% if selected_status == 'PAID' %}selected{% endif %}>Lunas / Disetujui</option>
+          <option value="REJECTED" {% if selected_status == 'REJECTED' %}selected{% endif %}>Ditolak</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-coral w-100 font-weight-bold">Filter 🔍</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="cute-card p-4">
+    {% if orders %}
+      <div class="table-responsive">
+        <table class="table table-cute align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Kode Order</th>
+              <th>Pembeli</th>
+              <th>Event Tour</th>
+              <th>Qty</th>
+              <th>Total Tagihan</th>
+              <th>Bukti Transfer</th>
+              <th>Status</th>
+              <th>Aksi Verifikasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+              <tr>
+                <td>
+                  <a href="{% url 'organizer_order_detail' pk=order.pk %}" class="font-monospace text-orange text-decoration-none fw-bold">
+                    {{ order.order_code }}
+                  </a>
+                </td>
+                <td class="fw-semibold text-dark">
+                  {{ order.buyer.get_full_name|default:order.buyer.username }}
+                  <small class="d-block text-muted">{{ order.buyer.email }}</small>
+                </td>
+                <td>{{ order.event.title|truncatewords:4 }}</td>
+                <td>{{ order.quantity }} lembar</td>
+                <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0 }}</td>
+                <td>
+                  {% if order.payment_proof %}
+                    <a href="{{ order.payment_proof.url }}" target="_blank" class="btn btn-outline-cute btn-sm text-orange">
+                      🖼️ Lihat Bukti
+                    </a>
+                  {% else %}
+                    <span class="badge bg-warning bg-opacity-25 text-dark">Belum Upload</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="badge-status badge-{{ order.payment_status|lower }}">
+                    {{ order.get_payment_status_display }}
+                  </span>
+                </td>
+                <td>
+                  <a href="{% url 'organizer_order_detail' pk=order.pk %}" class="btn btn-coral btn-sm text-white font-weight-bold">
+                    Tinjau & Setujui
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <div class="fs-1 text-muted mb-2">📋</div>
+        <h4 class="text-dark fw-bold" style="font-family: 'Outfit', sans-serif;">Tidak Ada Pesanan</h4>
+        <p class="text-muted">Tidak ditemukan pesanan tiket sesuai dengan filter ini.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

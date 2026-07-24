@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Login - Summer Pop Festival 2026{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-md-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+
+      <div class="cute-card overflow-hidden p-0 shadow-lg border-0">
+        <div class="row g-0">
+
+          <!-- Left Side: Festival Banner Card (Matching Screenshot Aesthetic) -->
+          <div class="col-md-6 p-4 p-md-5 d-flex flex-column justify-content-between position-relative" style="background: linear-gradient(135deg, #ff9f1c 0%, #ff7034 50%, #ff5252 100%); color: #ffffff;">
+
+            <div class="position-absolute top-0 end-0 m-4 opacity-75 display-4">🎶</div>
+
+            <div>
+              <h1 class="display-4 font-weight-black text-white mb-2" style="font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1.05;">
+                SUMMER POP FESTIVAL
+              </h1>
+              <div class="fs-5 font-weight-bold mb-3" style="color: #fff3c4; font-family: 'Fredoka', sans-serif;">
+                🌈 Feel The Beat, Enjoy The Moment
+              </div>
+              <p class="text-white opacity-90 small leading-relaxed mb-4">
+                Welcome to the most exciting summer music festival. Manage your tickets, discover amazing events, and create unforgettable memories.
+              </p>
+            </div>
+
+            <!-- White Info Card inside Banner -->
+            <div class="p-4 rounded-4 bg-white text-dark shadow-sm position-relative mt-3" style="border-radius: 24px;">
+              <div class="d-flex align-items-center gap-2 fw-bold text-orange small mb-1.5" style="font-family: 'Outfit', sans-serif;">
+                🎫 <span>2026 Summer Experience</span>
+              </div>
+              <div class="small fw-bold text-dark mb-1">
+                🎤 Music • Fun • Celebration
+              </div>
+              <div class="small text-muted">
+                📍 Jakarta • Bali • Bandung
+              </div>
+              <div class="position-absolute bottom-0 end-0 m-3 fs-3 text-primary opacity-75">🎵</div>
+            </div>
+
+          </div>
+
+          <!-- Right Side: Login Form (Balanced & Clean) -->
+          <div class="col-md-6 p-4 p-md-5 bg-white d-flex flex-column justify-content-center">
+
+            <div class="mb-4">
+              <h2 class="font-weight-black mb-1" style="font-family: 'Outfit', sans-serif; color: #ff7034;">
+                Hello! 👋
+              </h2>
+              <p class="text-muted small">Login and join the festival vibes ✨</p>
+            </div>
+
+            <form method="post" action="{% url 'login' %}">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">Username / Email</label>
+                <input type="text" name="username" class="form-control" placeholder="Masukkan username" required autofocus>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-muted small fw-bold">Password</label>
+                <div class="position-relative">
+                  <input type="password" name="password" id="id_password" class="form-control" placeholder="Masukkan password" required>
+                  <span class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted cursor-pointer" onclick="togglePassword()">
+                    👁️
+                  </span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-coral w-100 py-3 mb-3 text-white fs-6">
+                Login
+              </button>
+
+              <!-- Emoji Row -->
+              <div class="d-flex justify-content-center gap-3 fs-4 mb-3 text-muted">
+                <span>🎵</span>
+                <span>🎧</span>
+                <span>🎫</span>
+                <span>✨</span>
+                <span>🌴</span>
+              </div>
+
+              <div class="text-center text-muted small mb-3">
+                Belum memiliki akun? <a href="{% url 'register' %}" class="text-orange text-decoration-none fw-bold">Daftar Sekarang</a>
+              </div>
+
+              <div class="text-center text-muted extra-small">
+                Summer Pop Festival 2026
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePassword() {
+  const pwd = document.getElementById('id_password');
+  if (pwd.type === 'password') {
+    pwd.type = 'text';
+  } else {
+    pwd.type = 'password';
+  }
+}
+</script>
+{% endblock %}

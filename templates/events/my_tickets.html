@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Tiket Saya - Summer Pop Festival 2026{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">🎫 Tiket & Pesanan Saya</h3>
+      <p class="text-muted small mb-0">Summer Pop Festival 2026 Multi-City Tour</p>
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-coral">
+      ✨ Beli Tiket Tour Lain
+    </a>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <ul class="nav nav-pills mb-4 cute-card p-1.5 d-inline-flex border-0" id="ticketTabs">
+    <li class="nav-item">
+      <button class="nav-link active rounded-pill text-dark fw-bold px-4" id="tickets-tab" data-bs-toggle="pill" data-bs-target="#tickets-content">
+        🎟️ E-Ticket Aktif ({{ tickets|length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill text-dark fw-bold px-4" id="orders-tab" data-bs-toggle="pill" data-bs-target="#orders-content">
+        📋 Riwayat Pesanan ({{ orders|length }})
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="ticketTabsContent">
+
+    <!-- Active E-Tickets Tab -->
+    <div class="tab-pane fade show active" id="tickets-content">
+      {% if tickets %}
+        <div class="row g-4">
+          {% for ticket in tickets %}
+            <div class="col-md-6 col-lg-4">
+              <div class="cute-card p-4 h-100 d-flex flex-column position-relative overflow-hidden">
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <span class="badge bg-warning bg-opacity-25 text-orange font-monospace px-3 py-1.5 rounded-pill">
+                    {{ ticket.ticket_code }}
+                  </span>
+                  {% if ticket.is_checked_in %}
+                    <span class="badge bg-secondary text-white"><i class="fa-solid fa-check-double me-1"></i> Checked-in</span>
+                  {% else %}
+                    <span class="badge bg-success text-white"><i class="fa-solid fa-circle-check me-1"></i> Ready Gate</span>
+                  {% endif %}
+                </div>
+
+                <h5 class="fw-bold text-dark mb-2 line-clamp-2" style="font-family: 'Fredoka', sans-serif;">{{ ticket.order.event.title }}</h5>
+
+                <div class="text-muted small mb-3 vstack gap-1">
+                  <div>👤 Pemegang: <strong>{{ ticket.attendee_name }}</strong></div>
+                  <div>🗓️ Tanggal: {{ ticket.order.event.start_date|date:"d M Y, H:i" }} WIB</div>
+                  <div class="line-clamp-1">📍 Venue: {{ ticket.order.event.venue }}</div>
+                </div>
+
+                <div class="text-center my-3 p-3 bg-white rounded-4 border border-warning border-opacity-50 shadow-sm">
+                  {% if ticket.qr_code %}
+                    <img src="{{ ticket.qr_code.url }}" width="130" height="130" alt="QR Code {{ ticket.ticket_code }}">
+                  {% else %}
+                    <i class="fa-solid fa-qrcode display-4 text-dark"></i>
+                  {% endif %}
+                </div>
+
+                <div class="mt-auto pt-3 border-top border-light text-center">
+                  <a href="{% url 'ticket_detail' ticket_code=ticket.ticket_code %}" class="btn btn-outline-cute w-100 font-weight-bold">
+                    🔍 Buka & Cetak E-Ticket
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="cute-card p-5 text-center my-3">
+          <div class="fs-1 text-muted mb-2">🎫</div>
+          <h4 class="text-dark fw-bold" style="font-family: 'Fredoka', sans-serif;">Belum Ada E-Ticket</h4>
+          <p class="text-muted">Anda belum memiliki E-Ticket aktif. Silakan lakukan pemesanan tiket tour.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Orders History Tab -->
+    <div class="tab-pane fade" id="orders-content">
+      {% if orders %}
+        <div class="table-responsive cute-card p-3">
+          <table class="table table-cute align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Kode Pesanan</th>
+                <th>Event Tour</th>
+                <th>Jumlah</th>
+                <th>Total Tagihan</th>
+                <th>Metode</th>
+                <th>Status Pembayaran</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+                <tr>
+                  <td class="font-monospace fw-bold text-orange">{{ order.order_code }}</td>
+                  <td class="fw-semibold text-dark">{{ order.event.title|truncatewords:4 }}</td>
+                  <td>{{ order.quantity }} Lembar</td>
+                  <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0 }}</td>
+                  <td><small class="text-muted">{{ order.get_payment_method_display }}</small></td>
+                  <td>
+                    <span class="badge-status badge-{{ order.payment_status|lower }}">
+                      {{ order.get_payment_status_display }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if order.payment_status == 'PENDING' %}
+                      <a href="{% url 'order_confirmation' order_code=order.order_code %}" class="btn btn-coral btn-sm">
+                        Bayar / Upload
+                      </a>
+                    {% else %}
+                      <span class="text-muted small">-</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="cute-card p-5 text-center my-3">
+          <div class="fs-1 text-muted mb-2">📋</div>
+          <h4 class="text-dark fw-bold" style="font-family: 'Fredoka', sans-serif;">Belum Ada Riwayat Pesanan</h4>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
