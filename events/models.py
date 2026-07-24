@@ -1,3 +1,5 @@
+# Modul sistem tiket event
+# Mengelola Event, Ticket, Booking, Payment, dan ETicket
 import os
 from django.db import models
 from django.contrib.auth.models import User
