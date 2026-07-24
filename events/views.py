@@ -3,6 +3,7 @@
 import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 # Pengelolaan proses pembayaran digital dan transaksi tiket pengguna
+# Pengelolaan alur booking tiket hingga penerbitan e-ticket
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
