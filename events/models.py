@@ -116,7 +116,7 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.order_code} - {self.buyer.username} ({self.event.title})"
 
-
+# Modul pembuatan dan pengelolaan e-ticket digital pengguna
 class Ticket(models.Model):
     ticket_code = models.CharField(max_length=30, unique=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='tickets')
