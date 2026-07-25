@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+# konfigurasi aplikasi utama Eventify dan database Django
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
