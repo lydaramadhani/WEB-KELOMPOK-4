@@ -75,6 +75,7 @@ WSGI_APPLICATION = 'eventify.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# konfigurasi database utama aplikasi eventify
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
