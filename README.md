@@ -101,3 +101,11 @@ Aplikasi ini dilengkapi dengan penanganan peran pengakses (Role-Based Access Con
 3. **`Event`**: Menyimpan detail kegiatan (Judul, Slug, Kategori, Organizer, Deskripsi, Venue, Tanggal Mulai/Selesai, Harga, Kuota, Poster Image, Status).
 4. **`Order`**: Menyimpan transaksi pemesanan tiket (Kode Order, Pembuat, Event, Qty, Total Amount, Metode Pembayaran, Bukti Transfer Image, Status Pembayaran, Catatan).
 5. **`Ticket`**: Menyimpan e-ticket individu (Kode Tiket, Relasi Order, Nama Pemegang, Email, QR Code Image, Status Check-in, Waktu Check-in).
+
+## Quality Testing
+
+Pengujian sistem dilakukan untuk memastikan:
+- Proses login berjalan dengan baik
+- Pemesanan tiket dapat dilakukan
+- Data transaksi tersimpan
+- Validasi tiket berjalan sesuai alur
