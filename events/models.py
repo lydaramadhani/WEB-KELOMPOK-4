@@ -2,6 +2,7 @@
 # Mengelola Event, Ticket, Booking, Payment, dan ETicket
 import os
 from django.db import models
+# struktur database utama untuk Event, Ticket, Booking, Payment, dan E-Ticket
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.utils import timezone
