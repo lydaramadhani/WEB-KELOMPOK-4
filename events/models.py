@@ -36,7 +36,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-
+# model ORM untuk mengelola data event
 class Event(models.Model):
     STATUS_CHOICES = (
         ('UPCOMING', 'Upcoming'),
@@ -118,7 +118,7 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.order_code} - {self.buyer.username} ({self.event.title})"
 
-
+# model ORM untyk transaksi pemesanan tiket pengguna
 class Ticket(models.Model):
     ticket_code = models.CharField(max_length=30, unique=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='tickets')
