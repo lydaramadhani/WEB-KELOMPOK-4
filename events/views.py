@@ -1,6 +1,7 @@
 # Modul checkout tiket dan proses transaksi pengguna
 # Proses transaksi dan metode pembayaran tiket pengguna
 import datetime
+# validasi status tiket sebelum proses check-in pengguna
 from django.shortcuts import render, redirect, get_object_or_404
 # Pengelolaan proses pembayaran digital dan transaksi tiket pengguna
 # Pengelolaan alur booking tiket hingga penerbitan e-ticket
@@ -33,10 +34,33 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            ticket_type = form.cleaned_data.get('ticket_type', 'REGULAR')
+            payment_method = form.cleaned_data['payment_method']
+            attendee_name = form.cleaned_name if hasattr(form, 'cleaned_name') else form.cleaned_data['attendee_name']
+            attendee_email = form.cleaned_data['attendee_email']
             user.set_password(form.cleaned_data['password'])
             user.first_name = form.cleaned_data['full_name']
             user.email = form.cleaned_data['email']
             user.save()
+
+            price_multiplier = 1.0
+            if ticket_type == 'VIP':
+                price_multiplier = 1.5
+            elif ticket_type == 'VVIP':
+                price_multiplier = 2.5
+            total_amount = (event.ticket_price * price_multiplier) * quantity
+            order_code = generate_order_code()
+            order = Order.objects.create(
+                order_code=order_code,
+                buyer=request.user,
+                event=event,
+                quantity=quantity,
+                ticket_type=ticket_type,  # ➕ SIMPAN KE MODEL ORDER
+                total_amount=total_amount,
+                payment_method=payment_method,
+                payment_status='PENDING',
+                notes=f"Pemegang Tiket ({ticket_type}): {attendee_name} ({attendee_email})"
+            )
 
             UserProfile.objects.create(
                 user=user,
@@ -296,7 +320,7 @@ def organizer_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
-
+# Proses check-in tiket oleh petugas pada hari acara
 @organizer_required
 def organizer_dashboard_view(request):
     is_master_admin = request.user.is_staff or request.user.is_superuser
@@ -498,6 +522,7 @@ def organizer_order_detail_view(request, pk):
                         Ticket.objects.create(
                             ticket_code=t_code,
                             order=order,
+                            ticket_type=order.ticket_type,
                             attendee_name=attendee_name,
                             attendee_email=attendee_email,
                             qr_code=qr_file

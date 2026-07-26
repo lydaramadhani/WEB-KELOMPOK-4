@@ -30,6 +30,10 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+# konfigurasi aplikasi utama Eventify dan database Django
+
+# finalisasi integrasi aplikasi Eventify dengan struktur Django
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'events',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +79,7 @@ WSGI_APPLICATION = 'eventify.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# konfigurasi database utama aplikasi eventify
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
