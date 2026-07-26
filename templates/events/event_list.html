@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 {% block title %}Summer Pop Festival 2026 - Jadwal Konser & Tiket Official{% endblock %}
 
 {% block content %}
@@ -175,9 +175,10 @@
               <div class="mt-auto pt-3 border-top border-light d-flex align-items-center justify-content-between">
                 <div>
                   <small class="text-muted d-block fw-bold">Harga Tiket Presale</small>
-                  <span class="fs-4 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
-                    Rp {{ event.ticket_price|floatformat:0 }}
-                  </span>
+                 <span class="fs-4 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
+                  Rp {{ event.ticket_price|floatformat:0|intcomma }}
+
+                 </span>
                 </div>
 
                 <a href="{% url 'event_detail' slug=event.slug %}" class="btn btn-coral">

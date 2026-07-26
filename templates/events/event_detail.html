@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{ event.title }} - Summer Pop Festival{% endblock %}
-
+{% load static humanize %}
 {% block content %}
 <div class="container py-4">
 
@@ -101,7 +101,7 @@
         <div class="mb-4">
           <small class="text-muted d-block mb-1 fw-semibold">Harga Tiket Presale</small>
           <div class="fs-2 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
-            Rp {{ event.ticket_price|floatformat:0 }}
+            Rp {{ event.ticket_price|floatformat:0|intcomma }}
           </div>
         </div>
 

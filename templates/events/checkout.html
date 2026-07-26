@@ -41,7 +41,7 @@
               <div class="col-md-7 mt-2 mt-md-0 text-md-end">
                 <small class="text-muted d-block fw-semibold">Harga per lembar:</small>
                 <span id="ticket_price_unit" data-price="{{ event.ticket_price }}" class="fw-bold text-orange fs-5" style="font-family: 'Fredoka', sans-serif;">
-                  Rp {{ event.ticket_price|floatformat:0 }}
+                  Rp {{ event.ticket_price|floatformat:0|intcomma }}
                 </span>
               </div>
             </div>
@@ -97,7 +97,7 @@
           <!-- Total Calculation -->
           <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center justify-content-between">
             <span class="text-dark font-weight-bold fs-5" style="font-family: 'Fredoka', sans-serif;">Total Tagihan</span>
-            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|floatformat:0 }}</span>
+            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|floatformat:0|intcomma }}</span>
           </div>
 
           <div class="d-flex gap-2">
