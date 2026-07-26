@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{% if is_master_admin %}Master Admin System Dashboard{% else %}Organizer Analytics Dashboard{% endif %} - Summer Pop Festival{% endblock %}
-{% load static humanize %}
+
 {% block content %}
 <div class="container py-4">
 
@@ -58,7 +58,7 @@
           <small class="text-muted fw-bold">Total Pendapatan</small>
           <div class="rounded-circle bg-success bg-opacity-15 p-2 text-success fs-5">💰</div>
         </div>
-        <h2 class="fw-bold text-dark mb-0" style="font-family: 'Outfit', sans-serif;">Rp {{ total_revenue|floatformat:0|intcomma }}</h2>
+        <h2 class="fw-bold text-dark mb-0" style="font-family: 'Outfit', sans-serif;">Rp {{ total_revenue|floatformat:0 }}</h2>
         <small class="text-success fw-bold">Real-time Verified</small>
       </div>
     </div>
@@ -165,7 +165,7 @@
                     </td>
                     <td>{{ order.buyer.get_full_name|default:order.buyer.username }}</td>
                     <td class="text-dark">{{ order.event.title|truncatewords:3 }}</td>
-                    <td class="fw-bold">Rp {{ order.total_amount|floatformat:0|intcomma }}</td>
+                    <td class="fw-bold">Rp {{ order.total_amount|floatformat:0 }}</td>
                     <td>
                       <span class="badge-status badge-{{ order.payment_status|lower }}">
                         {{ order.get_payment_status_display }}
@@ -201,7 +201,7 @@
             </div>
             <small class="text-muted d-block">Pendapatan Terverifikasi:</small>
             <div class="fs-5 fw-bold text-orange" style="font-family: 'Outfit', sans-serif;">
-              Rp {{ cat.revenue|default:0|floatformat:0|intcomma }}
+              Rp {{ cat.revenue|default:0|floatformat:0 }}
             </div>
           </div>
         </div>

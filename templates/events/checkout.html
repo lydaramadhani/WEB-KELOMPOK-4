@@ -31,6 +31,17 @@
         <form method="post" action="{% url 'checkout' slug=event.slug %}">
           {% csrf_token %}
 
+          <!-- Ticket Type Selection (Regular, VIP, VVIP) -->
+          <div class="mb-4">
+            <label class="form-label text-dark fw-bold">Pilih Kategori Tiket (Pass Tier)</label>
+            {{ form.ticket_type }}
+            <small class="text-muted d-block mt-1">
+              • <strong>Regular Pass</strong>: Akses area festival standar (Harga Dasar)<br>
+              • <strong>VIP Pass</strong>: Akses Depan Stage & Lineup Meet Zone (+50% harga)<br>
+              • <strong>VVIP Pass</strong>: Akses All Area + Lounge VIP & Exclusive Merch (+150% harga)
+            </small>
+          </div>
+
           <!-- Ticket Quantity -->
           <div class="mb-4">
             <label class="form-label text-dark fw-bold">Jumlah Tiket</label>
@@ -39,9 +50,9 @@
                 {{ form.quantity }}
               </div>
               <div class="col-md-7 mt-2 mt-md-0 text-md-end">
-                <small class="text-muted d-block fw-semibold">Harga per lembar:</small>
+                <small class="text-muted d-block fw-semibold">Harga per lembar dasar:</small>
                 <span id="ticket_price_unit" data-price="{{ event.ticket_price }}" class="fw-bold text-orange fs-5" style="font-family: 'Fredoka', sans-serif;">
-                  Rp {{ event.ticket_price|floatformat:0|intcomma }}
+                  Rp {{ event.ticket_price|floatformat:0 }}
                 </span>
               </div>
             </div>
@@ -97,7 +108,7 @@
           <!-- Total Calculation -->
           <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center justify-content-between">
             <span class="text-dark font-weight-bold fs-5" style="font-family: 'Fredoka', sans-serif;">Total Tagihan</span>
-            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|floatformat:0|intcomma }}</span>
+            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|floatformat:0 }}</span>
           </div>
 
           <div class="d-flex gap-2">
@@ -113,4 +124,34 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const quantityInput = document.getElementById('id_quantity');
+  const ticketTypeSelect = document.getElementById('id_ticket_type');
+  const unitPriceElem = document.getElementById('ticket_price_unit');
+  const totalPriceElem = document.getElementById('total_price_calc');
+
+  if (quantityInput && ticketTypeSelect && unitPriceElem && totalPriceElem) {
+    const basePrice = parseFloat(unitPriceElem.dataset.price || 0);
+
+    function calculateTotal() {
+      const qty = parseInt(quantityInput.value) || 1;
+      const tier = ticketTypeSelect.value;
+      let multiplier = 1.0;
+      if (tier === 'VIP') multiplier = 1.5;
+      else if (tier === 'VVIP') multiplier = 2.5;
+
+      const total = (basePrice * multiplier) * qty;
+      totalPriceElem.textContent = 'Rp ' + total.toLocaleString('id-ID');
+    }
+
+    quantityInput.addEventListener('input', calculateTotal);
+    ticketTypeSelect.addEventListener('change', calculateTotal);
+    calculateTotal();
+  }
+});
+</script>
 {% endblock %}
