@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static humanize %}
+{% load static %}
 {% block title %}Summer Pop Festival 2026 - Jadwal Konser & Tiket Official{% endblock %}
 
 {% block content %}
@@ -25,7 +25,7 @@
           Selamat datang di festival musik terbesar tahun 2026! Nikmati 3 event konser spektakuler dengan penataan panggung megah, pilihan kuliner hits, dan penampilan musisi favoritmu di Jakarta, Bali, dan Bandung.
         </p>
 
-        <!-- Search Bar with Professional Alignment -->
+        <!-- Search Bar -->
         <form method="get" action="{% url 'home' %}#event-catalog" class="search-container row g-2 align-items-center">
           <div class="col-md-6">
             <div class="input-group">
@@ -48,7 +48,7 @@
         </form>
       </div>
 
-      <!-- Right Side: Balanced Festival Highlights Graphic -->
+      <!-- Right Side: Festival Highlights Graphic -->
       <div class="col-lg-5 text-center position-relative z-1">
         <div class="p-4 rounded-4 bg-white text-dark shadow-lg border border-white border-opacity-30 d-inline-block w-100 text-start" style="border-radius: 28px; max-width: 380px;">
           
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <!-- Category Pills (Anchored directly to #event-catalog so NO jump to top!) -->
+  <!-- Category Pills -->
   <div class="d-flex align-items-center gap-2 overflow-x-auto pb-3 mb-4 no-scrollbar">
     <a href="?#event-catalog" class="btn {% if not selected_category %}btn-coral{% else %}btn-outline-cute{% endif %} text-nowrap">
       🌈 Semua 3 Event
@@ -116,7 +116,7 @@
     {% endfor %}
   </div>
 
-  <!-- Event Grid Header (Target Anchor for Category Clicks) -->
+  <!-- Event Grid Header -->
   <div id="event-catalog" class="d-flex justify-content-between align-items-center mb-4 pt-2">
     <div>
       <h3 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">
@@ -174,11 +174,10 @@
               <!-- Card Footer -->
               <div class="mt-auto pt-3 border-top border-light d-flex align-items-center justify-content-between">
                 <div>
-                  <small class="text-muted d-block fw-bold">Harga Tiket Presale</small>
-                 <span class="fs-4 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
-                  Rp {{ event.ticket_price|floatformat:0|intcomma }}
-
-                 </span>
+                  <small class="text-muted d-block fw-bold">Tiket Mulai Dari</small>
+                  <span class="fs-4 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
+                    Rp {{ event.ticket_price|floatformat:0 }}
+                  </span>
                 </div>
 
                 <a href="{% url 'event_detail' slug=event.slug %}" class="btn btn-coral">

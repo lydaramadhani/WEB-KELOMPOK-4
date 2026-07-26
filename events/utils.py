@@ -32,4 +32,3 @@ def generate_qr_code_image(ticket_code):
     buffer = io.BytesIO()
     img.save(buffer, format='PNG')
     return ContentFile(buffer.getvalue(), name=f"{ticket_code}.png")
-# Utility untuk mendukung proses transaksi tiket dan e-ticket

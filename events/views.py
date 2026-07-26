@@ -1,10 +1,6 @@
-# Modul checkout tiket dan proses transaksi pengguna
-# Proses transaksi dan metode pembayaran tiket pengguna
 import datetime
-# validasi status tiket sebelum proses check-in pengguna
+from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
-# Pengelolaan proses pembayaran digital dan transaksi tiket pengguna
-# Pengelolaan alur booking tiket hingga penerbitan e-ticket
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -34,33 +30,10 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            ticket_type = form.cleaned_data.get('ticket_type', 'REGULAR')
-            payment_method = form.cleaned_data['payment_method']
-            attendee_name = form.cleaned_name if hasattr(form, 'cleaned_name') else form.cleaned_data['attendee_name']
-            attendee_email = form.cleaned_data['attendee_email']
             user.set_password(form.cleaned_data['password'])
             user.first_name = form.cleaned_data['full_name']
             user.email = form.cleaned_data['email']
             user.save()
-
-            price_multiplier = 1.0
-            if ticket_type == 'VIP':
-                price_multiplier = 1.5
-            elif ticket_type == 'VVIP':
-                price_multiplier = 2.5
-            total_amount = (event.ticket_price * price_multiplier) * quantity
-            order_code = generate_order_code()
-            order = Order.objects.create(
-                order_code=order_code,
-                buyer=request.user,
-                event=event,
-                quantity=quantity,
-                ticket_type=ticket_type,  # ➕ SIMPAN KE MODEL ORDER
-                total_amount=total_amount,
-                payment_method=payment_method,
-                payment_status='PENDING',
-                notes=f"Pemegang Tiket ({ticket_type}): {attendee_name} ({attendee_email})"
-            )
 
             UserProfile.objects.create(
                 user=user,
@@ -91,10 +64,12 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                # Ensure UserProfile exists safely for any user
+                profile, _ = UserProfile.objects.get_or_create(user=user)
+
                 messages.success(request, f"Selamat datang kembali, {user.first_name or user.username}!")
                 
-                # Check profile redirect
-                if hasattr(user, 'profile') and user.profile.is_organizer or user.is_staff:
+                if profile.is_organizer or user.is_staff:
                     return redirect('organizer_dashboard')
                 return redirect('home')
             else:
@@ -137,7 +112,7 @@ def profile_view(request):
 
 
 # ==========================================
-# PUBLIC EVENT & PESERTA VIEWS
+# PUBLIC EVENT & PESERTA VIEWS (TEMPLATES/EVENTS/)
 # ==========================================
 
 def home_view(request):
@@ -190,8 +165,14 @@ def event_detail_view(request, slug):
         if request.user.is_staff or (hasattr(request.user, 'profile') and request.user.profile.is_organizer):
             is_eo_or_admin = True
 
+    # Use Decimal for accurate price calculation without TypeError
+    vip_price = event.ticket_price * Decimal('1.5')
+    vvip_price = event.ticket_price * Decimal('2.5')
+
     context = {
         'event': event,
+        'vip_price': vip_price,
+        'vvip_price': vvip_price,
         'related_events': related_events,
         'is_eo_or_admin': is_eo_or_admin,
     }
@@ -215,6 +196,7 @@ def checkout_view(request, slug):
         form = CheckoutForm(request.POST)
         if form.is_valid():
             quantity = form.cleaned_data['quantity']
+            ticket_type = form.cleaned_data.get('ticket_type', 'REGULAR')
             payment_method = form.cleaned_data['payment_method']
             attendee_name = form.cleaned_data['attendee_name']
             attendee_email = form.cleaned_data['attendee_email']
@@ -223,26 +205,34 @@ def checkout_view(request, slug):
                 messages.error(request, f"Jumlah pesanan melebihi sisa tiket yang tersedia ({event.remaining_quota} tiket tersisa).")
                 return redirect('checkout', slug=event.slug)
 
-            total_amount = event.ticket_price * quantity
+            # Ticket Type pricing multiplier using Decimal
+            price_multiplier = Decimal('1.0')
+            if ticket_type == 'VIP':
+                price_multiplier = Decimal('1.5')
+            elif ticket_type == 'VVIP':
+                price_multiplier = Decimal('2.5')
+
+            total_amount = (event.ticket_price * price_multiplier) * quantity
             order_code = generate_order_code()
 
-            # Strictly PENDING until Organizer verifies payment proof
             order = Order.objects.create(
                 order_code=order_code,
                 buyer=request.user,
                 event=event,
                 quantity=quantity,
+                ticket_type=ticket_type,
                 total_amount=total_amount,
                 payment_method=payment_method,
                 payment_status='PENDING',
-                notes=f"Pemegang Tiket: {attendee_name} ({attendee_email})"
+                notes=f"Pemegang Tiket ({ticket_type}): {attendee_name} ({attendee_email})"
             )
 
-            messages.success(request, f"Pesanan {order_code} berhasil dibuat. Silakan unggah bukti pembayaran untuk diverifikasi oleh Organizer.")
+            messages.success(request, f"Pesanan {order_code} ({ticket_type}) berhasil dibuat. Silakan unggah bukti pembayaran untuk diverifikasi oleh Organizer.")
             return redirect('order_confirmation', order_code=order.order_code)
     else:
         initial_data = {
             'quantity': 1,
+            'ticket_type': 'REGULAR',
             'attendee_name': request.user.get_full_name() or request.user.username,
             'attendee_email': request.user.email
         }
@@ -263,7 +253,7 @@ def order_confirmation_view(request, order_code):
         form = PaymentProofForm(request.POST, request.FILES, instance=order)
         if form.is_valid():
             order_obj = form.save(commit=False)
-            order_obj.payment_status = 'PENDING'  # Always PENDING for Organizer review
+            order_obj.payment_status = 'PENDING'
             order_obj.save()
             
             messages.success(request, "Bukti pembayaran berhasil diunggah! Data Anda langsung masuk ke Organizer untuk diverifikasi.")
@@ -294,7 +284,6 @@ def my_tickets_view(request):
 def ticket_detail_view(request, ticket_code):
     ticket = get_object_or_404(Ticket, ticket_code=ticket_code)
 
-    # Allow buyer, organizer of event, or staff to view ticket
     if ticket.order.buyer != request.user and ticket.order.event.organizer != request.user and not request.user.is_staff:
         messages.error(request, "Anda tidak memiliki akses untuk melihat tiket ini.")
         return redirect('my_tickets')
@@ -306,7 +295,7 @@ def ticket_detail_view(request, ticket_code):
 
 
 # ==========================================
-# ORGANIZER & ADMIN VIEWS (DIFFERENTIATED)
+# ORGANIZER & ADMIN VIEWS (TEMPLATES/ORGANIZER/)
 # ==========================================
 
 def organizer_required(view_func):
@@ -320,12 +309,11 @@ def organizer_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
-# Proses check-in tiket oleh petugas pada hari acara
+
 @organizer_required
 def organizer_dashboard_view(request):
     is_master_admin = request.user.is_staff or request.user.is_superuser
 
-    # Differentiate scope: Master Admin sees all events/data system-wide; Regular EO sees only their events
     if is_master_admin:
         user_events = Event.objects.all()
         related_orders = Order.objects.all()
@@ -343,7 +331,6 @@ def organizer_dashboard_view(request):
     paid_orders = related_orders.filter(payment_status='PAID')
     pending_orders = related_orders.filter(payment_status='PENDING')
 
-    # Live Real-time Active Analytics calculations
     total_tickets_sold = paid_orders.aggregate(Sum('quantity'))['quantity__sum'] or 0
     total_revenue = paid_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
 
@@ -355,7 +342,6 @@ def organizer_dashboard_view(request):
     recent_orders = related_orders.select_related('event', 'buyer')[:6]
     recent_events = user_events[:6]
 
-    # Category revenue breakdown for chart/analytics display
     category_analytics = Category.objects.annotate(
         event_count=Count('events'),
         revenue=Sum('events__orders__total_amount', filter=Q(events__orders__payment_status='PAID'))
@@ -376,6 +362,7 @@ def organizer_dashboard_view(request):
         'recent_events': recent_events,
         'category_analytics': category_analytics,
     }
+
     return render(request, 'organizer/dashboard.html', context)
 
 
@@ -507,12 +494,10 @@ def organizer_order_detail_view(request, pk):
                 order.payment_date = timezone.now()
                 order.save()
 
-                # Update event quota sold
                 event = order.event
                 event.quota_sold += order.quantity
                 event.save()
 
-                # Auto generate tickets upon organizer approval
                 if not order.tickets.exists():
                     attendee_name = order.buyer.get_full_name() or order.buyer.username
                     attendee_email = order.buyer.email
@@ -528,7 +513,7 @@ def organizer_order_detail_view(request, pk):
                             qr_code=qr_file
                         )
 
-                messages.success(request, f"Pesanan {order.order_code} disetujui & E-Ticket QR Code telah diterbitkan untuk pembeli.")
+                messages.success(request, f"Pesanan {order.order_code} disetujui & E-Ticket QR Code ({order.get_ticket_type_display()}) telah diterbitkan untuk pembeli.")
         elif action == 'reject':
             order.payment_status = 'REJECTED'
             order.save()
@@ -552,7 +537,6 @@ def organizer_ticket_validation_view(request):
             try:
                 scanned_ticket = Ticket.objects.select_related('order__event').get(ticket_code=t_code)
                 
-                # Verify organizer ownership if not master admin
                 if not is_master_admin and scanned_ticket.order.event.organizer != request.user:
                     validation_result = {
                         'success': False,
@@ -570,14 +554,13 @@ def organizer_ticket_validation_view(request):
                         'message': 'TIKET TIDAK VALID: Pembayaran pesanan belum disetujui oleh Organizer.'
                     }
                 else:
-                    # Check in ticket
                     scanned_ticket.is_checked_in = True
                     scanned_ticket.checked_in_at = timezone.now()
                     scanned_ticket.save()
 
                     validation_result = {
                         'success': True,
-                        'message': f'BERHASIL CHECK-IN! Selamat datang {scanned_ticket.attendee_name}.'
+                        'message': f'BERHASIL CHECK-IN! Selamat datang {scanned_ticket.attendee_name} ({scanned_ticket.get_ticket_type_display()}).'
                     }
             except Ticket.DoesNotExist:
                 validation_result = {

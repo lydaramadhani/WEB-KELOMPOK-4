@@ -73,6 +73,11 @@ class CategoryForm(forms.ModelForm):
 
 
 class CheckoutForm(forms.Form):
+    ticket_type = forms.ChoiceField(
+        choices=Order.TICKET_TYPE_CHOICES,
+        initial='REGULAR',
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_ticket_type'})
+    )
     quantity = forms.IntegerField(min_value=1, initial=1, widget=forms.NumberInput(attrs={
         'class': 'form-control text-center fw-bold', 'id': 'id_quantity'
     }))

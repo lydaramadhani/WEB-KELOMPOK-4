@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static humanize %}
 {% block title %}Tiket Saya - Summer Pop Festival 2026{% endblock %}
 
 {% block content %}
@@ -107,7 +106,7 @@
                   <td class="font-monospace fw-bold text-orange">{{ order.order_code }}</td>
                   <td class="fw-semibold text-dark">{{ order.event.title|truncatewords:4 }}</td>
                   <td>{{ order.quantity }} Lembar</td>
-                  <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0|intcomma }}</td>
+                  <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0 }}</td>
                   <td><small class="text-muted">{{ order.get_payment_method_display }}</small></td>
                   <td>
                     <span class="badge-status badge-{{ order.payment_status|lower }}">

@@ -1,7 +1,5 @@
-# Mengelola Event, Ticket, Booking, Payment, dan ETicket
 import os
 from django.db import models
-# struktur database utama untuk Event, Ticket, Booking, Payment, dan E-Ticket
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.utils import timezone
@@ -35,7 +33,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-# model ORM untuk mengelola data event
+
 class Event(models.Model):
     STATUS_CHOICES = (
         ('UPCOMING', 'Upcoming'),
@@ -91,7 +89,7 @@ class Order(models.Model):
         ('VIP', 'VIP Pass (Front Stage + Lineup Meet)'),
         ('VVIP', 'VVIP Pass (All Access + Lounge & Merchandise)'),
     )
-    
+
     PAYMENT_METHOD_CHOICES = (
         ('BANK_TRANSFER', 'Transfer Bank (BCA / BNI / BRI)'),
         ('EWALLET', 'E-Wallet (GoPay / OVO / Dana)'),
@@ -109,6 +107,7 @@ class Order(models.Model):
     buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='orders')
     quantity = models.IntegerField(default=1)
+    ticket_type = models.CharField(max_length=20, choices=TICKET_TYPE_CHOICES, default='REGULAR')
     total_amount = models.DecimalField(max_digits=12, decimal_places=0)
     payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='QRIS')
     payment_proof = models.ImageField(upload_to='payment_proofs/', blank=True, null=True)
@@ -116,19 +115,13 @@ class Order(models.Model):
     payment_date = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
-    ticket_type = models.CharField(max_length=20, choices=TICKET_TYPE_CHOICES, default='REGULAR')
-    
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.order_code} - {self.buyer.username} ({self.event.title})"
+        return f"{self.order_code} - {self.buyer.username} ({self.event.title} - {self.get_ticket_type_display()})"
 
-
-# Modul pembuatan dan pengelolaan e-ticket digital pengguna
-
-# model ORM untyk transaksi pemesanan tiket pengguna
 
 class Ticket(models.Model):
     ticket_code = models.CharField(max_length=30, unique=True)
@@ -145,4 +138,4 @@ class Ticket(models.Model):
         ordering = ['ticket_code']
 
     def __str__(self):
-        return f"{self.ticket_code} - {self.attendee_name}"
+        return f"{self.ticket_code} - {self.attendee_name} ({self.get_ticket_type_display()})"
