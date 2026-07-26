@@ -295,7 +295,7 @@ def organizer_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
-
+# Proses check-in tiket oleh petugas pada hari acara
 @organizer_required
 def organizer_dashboard_view(request):
     is_master_admin = request.user.is_staff or request.user.is_superuser
