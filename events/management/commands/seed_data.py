@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 'first_name': 'Panitia Summer Pop',
                 'is_staff': True,
                 'is_superuser': True
-            }
+            } 
         )
         if created:
             admin_user.set_password('admin123')
