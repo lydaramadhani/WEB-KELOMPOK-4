@@ -36,7 +36,8 @@ class Category(models.Model):
 
 class Event(models.Model):
     STATUS_CHOICES = (
-        ('UPCOMING', 'Upcoming'),
+        ('PENDING_APPROVAL', 'Menunggu Persetujuan Admin'),
+        ('UPCOMING', 'Upcoming (Disetujui)'),
         ('ONGOING', 'Sedang Berlangsung'),
         ('FINISHED', 'Selesai'),
         ('CANCELLED', 'Dibatalkan'),
@@ -54,7 +55,7 @@ class Event(models.Model):
     total_quota = models.IntegerField()
     quota_sold = models.IntegerField(default=0)
     poster = models.ImageField(upload_to='posters/', blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='UPCOMING')
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='PENDING_APPROVAL')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -94,7 +95,7 @@ class Order(models.Model):
         ('BANK_TRANSFER', 'Transfer Bank (BCA / BNI / BRI)'),
         ('EWALLET', 'E-Wallet (GoPay / OVO / Dana)'),
         ('QRIS', 'QRIS Instant'),
-        ('COD', 'Bayar ditempat (Loket Ticket Box Venue)') 
+        ('COD', 'Bayar di Tempat (Loket Ticket Box Venue)'),
     )
 
     PAYMENT_STATUS_CHOICES = (

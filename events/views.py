@@ -124,7 +124,8 @@ def home_view(request):
     status_filter = request.GET.get('status', '').strip()
     sort_by = request.GET.get('sort', '-start_date')
 
-    events = Event.objects.all()
+    # Public catalog only shows approved events (excludes PENDING_APPROVAL)
+    events = Event.objects.exclude(status='PENDING_APPROVAL')
 
     if query:
         events = events.filter(
@@ -373,7 +374,14 @@ def organizer_dashboard_view(request):
 def organizer_event_list_view(request):
     is_master_admin = request.user.is_staff or request.user.is_superuser
     events = Event.objects.all() if is_master_admin else Event.objects.filter(organizer=request.user)
-    return render(request, 'organizer/event_list_manage.html', {'events': events, 'is_master_admin': is_master_admin})
+    pending_approval_events = Event.objects.filter(status='PENDING_APPROVAL') if is_master_admin else None
+
+    context = {
+        'events': events,
+        'pending_approval_events': pending_approval_events,
+        'is_master_admin': is_master_admin
+    }
+    return render(request, 'organizer/event_list_manage.html', context)
 
 
 @organizer_required
@@ -383,9 +391,23 @@ def organizer_event_create_view(request):
         if form.is_valid():
             event = form.save(commit=False)
             event.organizer = request.user
+            # Non-staff EO event creation starts as PENDING_APPROVAL
+            if not request.user.is_staff:
+                event.status = 'PENDING_APPROVAL'
+            else:
+                event.status = form.cleaned_data.get('status', 'UPCOMING')
             event.save()
-            messages.success(request, f"Event '{event.title}' berhasil dibuat!")
+
+            if event.status == 'PENDING_APPROVAL':
+                messages.success(request, f"Event '{event.title}' berhasil dibuat & diajukan! Menunggu verifikasi & persetujuan Petugas Utama.")
+            else:
+                messages.success(request, f"Event '{event.title}' berhasil diterbitkan ke katalog publik!")
             return redirect('organizer_event_list')
+        else:
+            # Output error messages clearly to user
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Gagal menyimpan event: Kolom {field} - {error}")
     else:
         form = EventForm()
 
@@ -407,6 +429,10 @@ def organizer_event_edit_view(request, pk):
             form.save()
             messages.success(request, f"Event '{event.title}' berhasil diperbarui!")
             return redirect('organizer_event_list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Gagal mengedit event: Kolom {field} - {error}")
     else:
         form = EventForm(instance=event)
 
@@ -429,6 +455,27 @@ def organizer_event_delete_view(request, pk):
         return redirect('organizer_event_list')
 
     return render(request, 'organizer/event_confirm_delete.html', {'event': event})
+
+
+@login_required
+def admin_event_approve_view(request, pk):
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, "Akses khusus Petugas Utama / Master Admin.")
+        return redirect('home')
+
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            event.status = 'UPCOMING'
+            event.save()
+            messages.success(request, f"Event '{event.title}' berhasil disetujui & dipublikasikan ke katalog umum!")
+        elif action == 'reject':
+            event.status = 'CANCELLED'
+            event.save()
+            messages.warning(request, f"Pengajuan event '{event.title}' ditolak.")
+
+    return redirect('organizer_event_list')
 
 
 @organizer_required
