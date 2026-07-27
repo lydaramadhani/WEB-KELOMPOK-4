@@ -15,7 +15,7 @@
 
   <div class="row g-4">
     <!-- Main Content -->
-    <div class="col-lg-8">
+    <div class="col-lg-7">
       <div class="cute-card p-4 p-md-5">
 
         {% if event.poster %}
@@ -93,22 +93,83 @@
       </div>
     </div>
 
-    <!-- Booking Sidebar -->
-    <div class="col-lg-4">
+    <!-- Professional Interactive Booking Sidebar -->
+    <div class="col-lg-5">
       <div class="cute-card p-4 sticky-top" style="top: 100px;">
-        <h4 class="fw-bold text-dark mb-3" style="font-family: 'Outfit', sans-serif;">Tiket Festival</h4>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold text-dark mb-0" style="font-family: 'Outfit', sans-serif;">🎫 Tiket & Category Pass</h4>
+          <span class="badge bg-danger text-white rounded-pill px-3 py-1">Official Pass</span>
+        </div>
 
+        <!-- Pass Tier Cards Selector -->
         <div class="mb-4">
-          <small class="text-muted d-block mb-1 fw-semibold">Harga Tiket Presale</small>
-          <div class="fs-2 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
+          <label class="text-muted small fw-bold mb-2 d-block">Pilih Tingkatan Tiket Konser:</label>
+          <div class="vstack gap-2">
+
+            <!-- Regular Pass Tier Card -->
+            <div class="tier-card active p-3 rounded-4 border cursor-pointer" data-tier="REGULAR" data-price="{{ event.ticket_price|floatformat:0 }}" onclick="selectTier(this)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong class="text-dark d-block">🎟️ Regular Pass</strong>
+                  <small class="text-muted">Akses area festival & stage umum</small>
+                </div>
+                <div class="text-end">
+                  <span class="fw-bold text-orange">Rp {{ event.ticket_price|floatformat:0 }}</span>
+                  <small class="d-block text-muted">/ lembar</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIP Pass Tier Card -->
+            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VIP" data-price="{{ vip_price|floatformat:0 }}" onclick="selectTier(this)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong class="text-dark d-block">⭐ VIP Pass</strong>
+                  <small class="text-muted">Depan Stage + Fast Track Gate</small>
+                </div>
+                <div class="text-end">
+                  <span class="fw-bold text-orange">Rp {{ vip_price|floatformat:0 }}</span>
+                  <small class="d-block text-muted">/ lembar</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- VVIP Pass Tier Card -->
+            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VVIP" data-price="{{ vvip_price|floatformat:0 }}" onclick="selectTier(this)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong class="text-dark d-block">👑 VVIP Pass (All Access)</strong>
+                  <small class="text-muted">Lounge VIP + Merch + Open Bar</small>
+                </div>
+                <div class="text-end">
+                  <span class="fw-bold text-orange">Rp {{ vvip_price|floatformat:0 }}</span>
+                  <small class="d-block text-muted">/ lembar</small>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Selected Tier Live Price Display -->
+        <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="text-muted fw-bold">Harga Tiket Terpilih:</small>
+            <span class="badge bg-warning text-dark font-weight-bold" id="selected_tier_badge">Regular Pass</span>
+          </div>
+          <div class="fs-2 fw-extrabold text-orange" id="live_ticket_price" style="font-family: 'Outfit', sans-serif;">
             Rp {{ event.ticket_price|floatformat:0 }}
           </div>
+          <small class="text-muted d-block mt-1" id="tier_perks_text">
+            ✓ Akses area festival & stage umum<br>
+            ✓ Akses area kuliner & tenant booth
+          </small>
         </div>
 
         <!-- Quota Progress Bar -->
         <div class="mb-4">
           <div class="d-flex justify-content-between small text-muted mb-1 fw-semibold">
-            <span>Sisa Kuota Tiket</span>
+            <span>Sisa Kuota Tiket Total</span>
             <span class="fw-bold {% if event.is_sold_out %}text-danger{% else %}text-orange{% endif %}">
               {{ event.remaining_quota }} / {{ event.total_quota }}
             </span>
@@ -121,7 +182,7 @@
           </div>
         </div>
 
-        <!-- Role Restriction Notice -->
+        <!-- Role Restriction & Booking Button -->
         {% if is_eo_or_admin %}
           <div class="p-3 rounded-4 bg-warning bg-opacity-20 border border-warning text-center">
             <small class="text-orange fw-bold d-block mb-1">✨ Akses Event Organizer / Admin</small>
@@ -140,7 +201,7 @@
             ❌ Tour Dibatalkan
           </button>
         {% else %}
-          <a href="{% url 'checkout' slug=event.slug %}" class="btn btn-coral btn-lg w-100 py-3 text-white fs-6">
+          <a href="{% url 'checkout' slug=event.slug %}" id="btn_checkout_link" class="btn btn-coral btn-lg w-100 py-3 text-white fs-6">
             🎫 Beli Tiket Sekarang
           </a>
         {% endif %}
@@ -153,4 +214,48 @@
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectTier(element) {
+  document.querySelectorAll('.tier-card').forEach(card => card.classList.remove('active', 'border-orange', 'bg-warning', 'bg-opacity-10'));
+  element.classList.add('active', 'border-orange', 'bg-warning', 'bg-opacity-10');
+
+  const tier = element.dataset.tier;
+  const price = element.dataset.price;
+  const basePriceElem = document.getElementById('live_ticket_price');
+
+  basePriceElem.textContent = 'Rp ' + price;
+
+  const badgeElem = document.getElementById('selected_tier_badge');
+  const perksElem = document.getElementById('tier_perks_text');
+
+  if (tier === 'REGULAR') {
+    badgeElem.textContent = 'Regular Pass';
+    perksElem.innerHTML = '✓ Akses area festival & stage umum<br>✓ Akses area kuliner & tenant booth';
+  } else if (tier === 'VIP') {
+    badgeElem.textContent = '⭐ VIP Pass';
+    perksElem.innerHTML = '✓ Depan Stage VIP Pit Access<br>✓ Fast-Track Entrance Gate<br>✓ Lineup Meet & Greet Access';
+  } else if (tier === 'VVIP') {
+    badgeElem.textContent = '👑 VVIP Pass (All Access)';
+    perksElem.innerHTML = '✓ Unlimited All Area Access<br>✓ Air-Conditioned VVIP Lounge & Open Bar<br>✓ Free Official Merchandise Package';
+  }
+}
+</script>
+
+<style>
+.tier-card {
+  transition: all 0.2s ease-in-out;
+  border-color: #f1f3f5 !important;
+}
+.tier-card:hover {
+  border-color: #ff7034 !important;
+  transform: translateY(-2px);
+}
+.tier-card.active {
+  border-color: #ff7034 !important;
+  background-color: rgba(255, 112, 52, 0.08) !important;
+}
+</style>
 {% endblock %}

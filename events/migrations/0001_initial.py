@@ -2,7 +2,6 @@
 
 import django.db.models.deletion
 from django.conf import settings
-# migrasi awal database Eventify untuk tabel utama aplikasi
 from django.db import migrations, models
 
 
