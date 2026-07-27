@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static custom_filters %}
 {% block title %}Summer Pop Festival 2026 - Jadwal Konser & Tiket Official{% endblock %}
 
 {% block content %}
@@ -176,7 +176,7 @@
                 <div>
                   <small class="text-muted d-block fw-bold">Tiket Mulai Dari</small>
                   <span class="fs-4 fw-extrabold text-orange" style="font-family: 'Outfit', sans-serif;">
-                    Rp {{ event.ticket_price|floatformat:0 }}
+                    Rp {{ event.ticket_price|rupiah }}
                   </span>
                 </div>
 

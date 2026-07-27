@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}Kelola Pengguna & Persetujuan EO - Master Admin Control{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Master Admin Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h3 class="fw-bold text-dark mb-0" style="font-family: 'Fredoka', sans-serif;">
+          👑 Petugas Utama: Manajemen Pengguna & Persetujuan EO
+        </h3>
+        <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill">Master Control</span>
+      </div>
+      <p class="text-muted small mb-0">Kelola permohonan akses Event Organizer (EO), angkat Petugas Utama baru, dan tetapkan peran pengguna sistem.</p>
+    </div>
+    <a href="{% url 'organizer_dashboard' %}" class="btn btn-outline-cute">
+      ← Kembali ke Master Dashboard
+    </a>
+  </div>
+
+  <!-- Permohonan Akses EO Pending / Aktif -->
+  <div class="cute-card p-4 mb-4">
+    <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">
+      📝 Permohonan & Daftar Akun Event Organizer (EO)
+    </h5>
+
+    {% if eo_requests %}
+      <div class="table-responsive">
+        <table class="table table-cute align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Nama Pembuat Acara</th>
+              <th>Email / WhatsApp</th>
+              <th>Organisasi / Komunitas</th>
+              <th>Status Peran saat ini</th>
+              <th>Keputusan Petugas Utama</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in eo_requests %}
+              <tr>
+                <td class="fw-bold text-orange">{{ u.username }}</td>
+                <td class="fw-semibold text-dark">{{ u.get_full_name|default:u.username }}</td>
+                <td>
+                  {{ u.email }}
+                  <small class="d-block text-muted">{{ u.profile.phone|default:"-" }}</small>
+                </td>
+                <td><strong>{{ u.profile.organization_name|default:"Independen" }}</strong></td>
+                <td>
+                  {% if u.profile.is_organizer %}
+                    <span class="badge bg-warning text-dark">Event Organizer</span>
+                  {% else %}
+                    <span class="badge bg-info text-white">Peserta / Buyer</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="post" action="{% url 'admin_user_change_role' user_id=u.id %}" class="d-flex gap-1">
+                    {% csrf_token %}
+                    <input type="hidden" name="role" value="ORGANIZER">
+                    <button type="submit" class="btn btn-coral btn-sm text-white font-weight-bold">
+                      ✅ Disahkan Sebagai EO
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted small my-3">Belum ada permohonan akun EO baru.</p>
+    {% endif %}
+  </div>
+
+  <!-- Daftar Seluruh Pengguna & Manajemen Peran System -->
+  <div class="cute-card p-4">
+    <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">
+      👥 Daftar Seluruh Pengguna & Manajemen Peran Sistem
+    </h5>
+
+    <div class="table-responsive">
+      <table class="table table-cute align-middle mb-0">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Username</th>
+            <th>Nama Lengkap</th>
+            <th>Email</th>
+            <th>Peran Akses Saat Ini</th>
+            <th>Ubah Peran Pengguna</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="fw-bold text-orange">{{ u.username }}</td>
+              <td class="fw-semibold text-dark">{{ u.get_full_name|default:"-" }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                {% if u.is_staff or u.is_superuser %}
+                  <span class="badge bg-danger text-white">👑 Petugas Utama (Admin)</span>
+                {% elif u.profile.is_organizer %}
+                  <span class="badge bg-warning text-dark">✨ Event Organizer</span>
+                {% else %}
+                  <span class="badge bg-info text-white">👤 Peserta / Buyer</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not u.is_superuser %}
+                  <form method="post" action="{% url 'admin_user_change_role' user_id=u.id %}" class="d-flex gap-1">
+                    {% csrf_token %}
+
+                    {% if not u.profile.is_organizer and not u.is_staff %}
+                      <button type="submit" name="role" value="ORGANIZER" class="btn btn-warning btn-sm text-dark font-weight-bold">
+                        Promote to EO
+                      </button>
+                      <button type="submit" name="role" value="ADMIN" class="btn btn-danger btn-sm text-white font-weight-bold">
+                        Promote to Petugas Utama
+                      </button>
+                    {% elif u.profile.is_organizer and not u.is_staff %}
+                      <button type="submit" name="role" value="ADMIN" class="btn btn-danger btn-sm text-white font-weight-bold">
+                        Jadikan Petugas Utama
+                      </button>
+                      <button type="submit" name="role" value="PESERTA" class="btn btn-outline-cute btn-sm text-muted">
+                        Demote to Peserta
+                      </button>
+                    {% else %}
+                      <button type="submit" name="role" value="ORGANIZER" class="btn btn-warning btn-sm text-dark">
+                        Ubah ke EO
+                      </button>
+                      <button type="submit" name="role" value="PESERTA" class="btn btn-outline-cute btn-sm text-muted">
+                        Ubah ke Peserta
+                      </button>
+                    {% endif %}
+                  </form>
+                {% else %}
+                  <span class="text-muted small">System Superuser</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

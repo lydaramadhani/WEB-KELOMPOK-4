@@ -42,7 +42,10 @@ def register_view(request):
                 organization_name=form.cleaned_data.get('organization_name', '')
             )
 
-            messages.success(request, f"Akun {user.username} berhasil dibuat! Silakan masuk.")
+            if form.cleaned_data.get('is_organizer', False):
+                messages.success(request, f"Permohonan akun EO untuk {user.username} berhasil dibuat! Silakan masuk (permohonan akan ditinjau Petugas Utama).")
+            else:
+                messages.success(request, f"Akun {user.username} berhasil dibuat! Silakan masuk.")
             return redirect('login')
         else:
             messages.error(request, "Terjadi kesalahan pada formulir pendaftaran. Silakan periksa kembali data Anda.")
@@ -304,7 +307,7 @@ def organizer_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         is_org = hasattr(request.user, 'profile') and request.user.profile.is_organizer
         if not (is_org or request.user.is_staff):
-            messages.error(request, "Akses khusus Event Organizer. Silakan hubungi admin atau daftar sebagai EO.")
+            messages.error(request, "Akses khusus Event Organizer / Admin. Silakan hubungi Petugas Utama untuk persetujuan akun EO.")
             return redirect('home')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
@@ -330,10 +333,10 @@ def organizer_dashboard_view(request):
 
     paid_orders = related_orders.filter(payment_status='PAID')
     pending_orders = related_orders.filter(payment_status='PENDING')
-# Penghasilan & Penjualan khusus acara milik EO yang sedang login
+
     total_tickets_sold = paid_orders.aggregate(Sum('quantity'))['quantity__sum'] or 0
     total_revenue = paid_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-# Data Real-time Tiket & Check-in Gate khusus acara EO ini
+
     tickets_created = Ticket.objects.filter(order__in=paid_orders)
     total_tickets_created = tickets_created.count()
     total_checked_in = tickets_created.filter(is_checked_in=True).count()
@@ -620,3 +623,56 @@ def organizer_reports_view(request):
         'attendance_percentage': round((total_checked_in / total_tickets_created * 100), 1) if total_tickets_created > 0 else 0,
     }
     return render(request, 'organizer/reports.html', context)
+
+
+# ==========================================
+# STAKEHOLDER 3: MASTER ADMIN / PETUGAS UTAMA VIEWS
+# ==========================================
+
+@login_required
+def admin_user_manage_view(request):
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, "Akses khusus Petugas Utama / Master Admin.")
+        return redirect('home')
+
+    users = User.objects.select_related('profile').all().order_by('-date_joined')
+    eo_requests = users.filter(profile__is_organizer=True, is_staff=False)
+
+    context = {
+        'users': users,
+        'eo_requests': eo_requests,
+    }
+    return render(request, 'organizer/user_manage.html', context)
+
+
+@login_required
+def admin_user_change_role_view(request, user_id):
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, "Akses khusus Petugas Utama / Master Admin.")
+        return redirect('home')
+
+    target_user = get_object_or_404(User, id=user_id)
+    profile, _ = UserProfile.objects.get_or_create(user=target_user)
+
+    if request.method == 'POST':
+        new_role = request.POST.get('role')
+        if new_role == 'ORGANIZER':
+            profile.is_organizer = True
+            target_user.is_staff = False
+            profile.save()
+            target_user.save()
+            messages.success(request, f"Akun {target_user.username} berhasil disahkan sebagai Pembuat Acara (Event Organizer).")
+        elif new_role == 'ADMIN':
+            profile.is_organizer = True
+            target_user.is_staff = True
+            profile.save()
+            target_user.save()
+            messages.success(request, f"Akun {target_user.username} berhasil diangkat sebagai Petugas Utama (Master Admin).")
+        elif new_role == 'PESERTA':
+            profile.is_organizer = False
+            target_user.is_staff = False
+            profile.save()
+            target_user.save()
+            messages.info(request, f"Akun {target_user.username} diubah perannya menjadi Peserta / Buyer.")
+
+    return redirect('admin_user_manage')

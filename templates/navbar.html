@@ -40,6 +40,9 @@
               </a>
               <ul class="dropdown-menu cute-card border-0 shadow-lg mt-2 p-2">
                 <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_dashboard' %}">📊 Dashboard Analytics</a></li>
+                {% if user.is_staff %}
+                  <li><a class="dropdown-item rounded-3 py-2 fw-semibold text-danger font-weight-bold" href="{% url 'admin_user_manage' %}">👥 Kelola Pengguna & Persetujuan EO</a></li>
+                {% endif %}
                 <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_order_list' %}">💳 Verifikasi Pembayaran Masuk</a></li>
                 <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_event_list' %}">📅 Kelola Tour Event</a></li>
                 <li><a class="dropdown-item rounded-3 py-2 fw-semibold" href="{% url 'organizer_category_list' %}">🏷️ Kelola Kategori</a></li>

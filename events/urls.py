@@ -27,4 +27,8 @@ urlpatterns = [
     path('organizer/orders/<int:pk>/', views.organizer_order_detail_view, name='organizer_order_detail'),
     path('organizer/validation/', views.organizer_ticket_validation_view, name='organizer_ticket_validation'),
     path('organizer/reports/', views.organizer_reports_view, name='organizer_reports'),
+
+    # Petugas Utama / Master Admin Control Routes
+    path('master-admin/users/', views.admin_user_manage_view, name='admin_user_manage'),
+    path('master-admin/users/<int:user_id>/role/', views.admin_user_change_role_view, name='admin_user_change_role'),
 ]
