@@ -94,6 +94,7 @@ class Order(models.Model):
         ('BANK_TRANSFER', 'Transfer Bank (BCA / BNI / BRI)'),
         ('EWALLET', 'E-Wallet (GoPay / OVO / Dana)'),
         ('QRIS', 'QRIS Instant'),
+        ('COD', 'Bayar ditempat (Loket Ticket Box Venue)') 
     )
 
     PAYMENT_STATUS_CHOICES = (
