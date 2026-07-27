@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 {% block title %}{{ event.title }} - Summer Pop Festival{% endblock %}
 
 {% block content %}
@@ -107,42 +108,42 @@
           <div class="vstack gap-2">
 
             <!-- Regular Pass Tier Card -->
-            <div class="tier-card active p-3 rounded-4 border cursor-pointer" data-tier="REGULAR" data-price="{{ event.ticket_price|floatformat:0 }}" onclick="selectTier(this)">
+            <div class="tier-card active p-3 rounded-4 border cursor-pointer" data-tier="REGULAR" data-price="{{ event.ticket_price|rupiah }}" onclick="selectTier(this)">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <strong class="text-dark d-block">🎟️ Regular Pass</strong>
                   <small class="text-muted">Akses area festival & stage umum</small>
                 </div>
                 <div class="text-end">
-                  <span class="fw-bold text-orange">Rp {{ event.ticket_price|floatformat:0 }}</span>
+                  <span class="fw-bold text-orange">Rp {{ event.ticket_price|rupiah }}</span>
                   <small class="d-block text-muted">/ lembar</small>
                 </div>
               </div>
             </div>
 
             <!-- VIP Pass Tier Card -->
-            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VIP" data-price="{{ vip_price|floatformat:0 }}" onclick="selectTier(this)">
+            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VIP" data-price="{{ vip_price|rupiah }}" onclick="selectTier(this)">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <strong class="text-dark d-block">⭐ VIP Pass</strong>
                   <small class="text-muted">Depan Stage + Fast Track Gate</small>
                 </div>
                 <div class="text-end">
-                  <span class="fw-bold text-orange">Rp {{ vip_price|floatformat:0 }}</span>
+                  <span class="fw-bold text-orange">Rp {{ vip_price|rupiah }}</span>
                   <small class="d-block text-muted">/ lembar</small>
                 </div>
               </div>
             </div>
 
             <!-- VVIP Pass Tier Card -->
-            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VVIP" data-price="{{ vvip_price|floatformat:0 }}" onclick="selectTier(this)">
+            <div class="tier-card p-3 rounded-4 border cursor-pointer" data-tier="VVIP" data-price="{{ vvip_price|rupiah }}" onclick="selectTier(this)">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <strong class="text-dark d-block">👑 VVIP Pass (All Access)</strong>
                   <small class="text-muted">Lounge VIP + Merch + Open Bar</small>
                 </div>
                 <div class="text-end">
-                  <span class="fw-bold text-orange">Rp {{ vvip_price|floatformat:0 }}</span>
+                  <span class="fw-bold text-orange">Rp {{ vvip_price|rupiah }}</span>
                   <small class="d-block text-muted">/ lembar</small>
                 </div>
               </div>
@@ -158,7 +159,7 @@
             <span class="badge bg-warning text-dark font-weight-bold" id="selected_tier_badge">Regular Pass</span>
           </div>
           <div class="fs-2 fw-extrabold text-orange" id="live_ticket_price" style="font-family: 'Outfit', sans-serif;">
-            Rp {{ event.ticket_price|floatformat:0 }}
+            Rp {{ event.ticket_price|rupiah }}
           </div>
           <small class="text-muted d-block mt-1" id="tier_perks_text">
             ✓ Akses area festival & stage umum<br>

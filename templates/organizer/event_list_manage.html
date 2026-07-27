@@ -1,69 +1,123 @@
 {% extends 'base.html' %}
-{% block title %}Kelola Event - Organizer{% endblock %}
+{% load custom_filters %}
+{% block title %}Kelola Event Tour - Summer Pop Festival{% endblock %}
 
 {% block content %}
 <div class="container py-4">
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-calendar-days text-primary me-2"></i> Manajemen Event</h3>
-      <p class="text-muted small mb-0">Tambah, ubah, dan pantau seluruh daftar event milik Anda</p>
+      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">📅 Kelola Tour Event</h3>
+      <p class="text-muted small mb-0">Daftar event konser yang terdaftar dalam sistem.</p>
     </div>
-    <a href="{% url 'organizer_event_create' %}" class="btn btn-gradient">
-      <i class="fa-solid fa-plus me-1"></i> Tambah Event Baru
+    <a href="{% url 'organizer_event_create' %}" class="btn btn-coral">
+      ✨ Tambah Event Baru
     </a>
   </div>
 
-  <div class="glass-card p-4">
-    {% if events %}
+  <!-- Section Persetujuan Event Masuk (Khusus Petugas Utama / Master Admin) -->
+  {% if is_master_admin and pending_approval_events %}
+    <div class="cute-card p-4 mb-4 border border-warning border-2">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="fs-4">⏳</span>
+        <h5 class="fw-bold text-dark mb-0" style="font-family: 'Fredoka', sans-serif;">
+          Persetujuan Event Masuk (Pending Admin Approval)
+        </h5>
+        <span class="badge bg-warning text-dark font-weight-bold">{{ pending_approval_events|length }} Pengajuan</span>
+      </div>
+
       <div class="table-responsive">
-        <table class="table table-glass align-middle mb-0">
+        <table class="table table-cute align-middle mb-0">
           <thead>
             <tr>
-              <th>Poster</th>
+              <th>Judul Event</th>
+              <th>Pembuat Acara (EO)</th>
+              <th>Venue & Tanggal</th>
+              <th>Harga Dasar</th>
+              <th>Aksi Petugas Utama</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in pending_approval_events %}
+              <tr>
+                <td class="fw-bold text-dark">{{ event.title }}</td>
+                <td>
+                  <strong>{{ event.organizer.profile.organization_name|default:event.organizer.username }}</strong>
+                  <small class="d-block text-muted">{{ event.organizer.email }}</small>
+                </td>
+                <td>
+                  <div>{{ event.venue }}</div>
+                  <small class="text-orange font-weight-bold">{{ event.start_date|date:"d M Y, H:i" }} WIB</small>
+                </td>
+                <td class="fw-bold text-orange">Rp {{ event.ticket_price|rupiah }}</td>
+                <td>
+                  <form method="post" action="{% url 'admin_event_approve' pk=event.pk %}" class="d-flex gap-1">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="approve" class="btn btn-success btn-sm text-white font-weight-bold">
+                      ✅ Setujui & Terbitkan
+                    </button>
+                    <button type="submit" name="action" value="reject" class="btn btn-outline-cute btn-sm text-danger">
+                      ❌ Tolak
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Tabel Event Aktif/Terdaftar -->
+  <div class="cute-card p-4">
+    {% if events %}
+      <div class="table-responsive">
+        <table class="table table-cute align-middle mb-0">
+          <thead>
+            <tr>
               <th>Judul Event</th>
               <th>Kategori</th>
-              <th>Waktu Event</th>
+              <th>Penyelenggara (EO)</th>
+              <th>Waktu Konser</th>
               <th>Harga Tiket</th>
-              <th>Penjualan</th>
-              <th>Status</th>
-              <th class="text-end">Aksi</th>
+              <th>Kuota & Terjual</th>
+              <th>Status Approval</th>
+              <th>Aksi Edit / Hapus</th>
             </tr>
           </thead>
           <tbody>
             {% for event in events %}
               <tr>
-                <td style="width: 70px;">
-                  {% if event.poster %}
-                    <img src="{{ event.poster.url }}" width="50" height="50" class="rounded object-fit-cover" alt="">
+                <td>
+                  <strong class="text-dark d-block">{{ event.title }}</strong>
+                  <small class="text-muted">{{ event.venue }}</small>
+                </td>
+                <td><span class="badge bg-warning bg-opacity-25 text-dark">{{ event.category.name }}</span></td>
+                <td>
+                  <small class="fw-semibold text-dark">{{ event.organizer.profile.organization_name|default:event.organizer.username }}</small>
+                </td>
+                <td><small class="text-muted">{{ event.start_date|date:"d M Y, H:i" }} WIB</small></td>
+                <td class="fw-bold text-orange">Rp {{ event.ticket_price|rupiah }}</td>
+                <td>
+                  <small class="fw-bold text-dark">{{ event.quota_sold }} / {{ event.total_quota }}</small>
+                </td>
+                <td>
+                  {% if event.status == 'PENDING_APPROVAL' %}
+                    <span class="badge bg-warning text-dark">Menunggu Admin</span>
                   {% else %}
-                    <div class="bg-dark rounded p-2 text-center text-muted"><i class="fa-solid fa-image"></i></div>
+                    <span class="badge-status badge-{{ event.status|lower }}">
+                      {{ event.get_status_display }}
+                    </span>
                   {% endif %}
                 </td>
-                <td class="fw-bold text-white">
-                  <a href="{% url 'event_detail' slug=event.slug %}" class="text-white text-decoration-none" target="_blank">
-                    {{ event.title }}
-                  </a>
-                  <small class="d-block text-muted">{{ event.venue }}</small>
-                </td>
-                <td><span class="badge bg-dark text-info border border-secondary">{{ event.category.name }}</span></td>
-                <td class="small">{{ event.start_date|date:"d M Y, H:i" }}</td>
-                <td class="fw-semibold">Rp {{ event.ticket_price|floatformat:0 }}</td>
                 <td>
-                  <span class="fw-bold text-white">{{ event.quota_sold }}</span> / {{ event.total_quota }}
-                </td>
-                <td>
-                  <span class="badge-status badge-{{ event.status|lower }}">
-                    {{ event.get_status_display }}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <div class="btn-group btn-group-sm">
-                    <a href="{% url 'organizer_event_edit' pk=event.pk %}" class="btn btn-outline-glass text-warning" title="Edit">
-                      <i class="fa-solid fa-pen"></i>
+                  <div class="d-flex gap-1">
+                    <a href="{% url 'organizer_event_edit' pk=event.pk %}" class="btn btn-outline-cute btn-sm">
+                      ✏️ Edit
                     </a>
-                    <a href="{% url 'organizer_event_delete' pk=event.pk %}" class="btn btn-outline-glass text-danger" title="Hapus">
-                      <i class="fa-solid fa-trash"></i>
+                    <a href="{% url 'organizer_event_delete' pk=event.pk %}" class="btn btn-outline-cute btn-sm text-danger">
+                      🗑️ Hapus
                     </a>
                   </div>
                 </td>
@@ -74,9 +128,9 @@
       </div>
     {% else %}
       <div class="text-center py-5">
-        <i class="fa-solid fa-calendar-plus fs-1 text-muted mb-3"></i>
-        <h4 class="text-white fw-bold">Belum Ada Event Ditambahkan</h4>
-        <p class="text-muted">Klik tombol di atas untuk mempublikasikan event perdana Anda.</p>
+        <div class="fs-1 text-muted mb-2">📅</div>
+        <h4 class="text-dark fw-bold" style="font-family: 'Fredoka', sans-serif;">Belum Ada Event</h4>
+        <p class="text-muted">Klik tombol di atas untuk menambahkan event konser baru.</p>
       </div>
     {% endif %}
   </div>
