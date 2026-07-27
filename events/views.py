@@ -330,10 +330,10 @@ def organizer_dashboard_view(request):
 
     paid_orders = related_orders.filter(payment_status='PAID')
     pending_orders = related_orders.filter(payment_status='PENDING')
-
+# Penghasilan & Penjualan khusus acara milik EO yang sedang login
     total_tickets_sold = paid_orders.aggregate(Sum('quantity'))['quantity__sum'] or 0
     total_revenue = paid_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-
+# Data Real-time Tiket & Check-in Gate khusus acara EO ini
     tickets_created = Ticket.objects.filter(order__in=paid_orders)
     total_tickets_created = tickets_created.count()
     total_checked_in = tickets_created.filter(is_checked_in=True).count()
