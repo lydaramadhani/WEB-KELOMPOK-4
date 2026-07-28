@@ -1,64 +1,594 @@
 {% extends 'base.html' %}
-{% block title %}Kelola Kategori Event - Eventify{% endblock %}
+
+{% block title %}
+Kelola Kategori Event - Summer Pop Festival
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* =========================================
+     CATEGORY MANAGEMENT PAGE
+  ========================================= */
+
+  .category-page {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .category-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .category-page-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.45rem;
+    color: #f25c05;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .category-page-header h2 {
+    margin: 0;
+    color: #2d2420;
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .category-page-header p {
+    margin: 0.4rem 0 0;
+    color: #74675f;
+    font-size: 0.84rem;
+  }
+
+  .category-total {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 0 0 auto;
+    padding: 0.7rem 1rem;
+    background: #ffffff;
+    border: 1.5px solid #ffd8c2;
+    border-radius: 15px;
+    box-shadow: 0 8px 22px rgba(255, 112, 52, 0.08);
+  }
+
+  .category-total-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    color: #f25c05;
+    background: #fff0e7;
+    border-radius: 11px;
+  }
+
+  .category-total strong {
+    display: block;
+    color: #2d2420;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .category-total small {
+    display: block;
+    color: #8c7e76;
+    font-size: 0.67rem;
+  }
+
+  /* Card */
+  .category-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1.5px solid #ffd8c2;
+    border-radius: 24px;
+    box-shadow: 0 15px 38px rgba(255, 112, 52, 0.09);
+  }
+
+  .category-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1.25rem 1.4rem;
+    border-bottom: 1px solid #ffe7da;
+  }
+
+  .category-card-header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff7034, #ff5252);
+    border-radius: 13px;
+    box-shadow: 0 8px 18px rgba(255, 82, 82, 0.2);
+  }
+
+  .category-card-header h4 {
+    margin: 0;
+    color: #2d2420;
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .category-card-header p {
+    margin: 0.2rem 0 0;
+    color: #8a7c74;
+    font-size: 0.7rem;
+  }
+
+  /* Form */
+  .category-form-body {
+    padding: 1.4rem;
+  }
+
+  .category-form-field {
+    margin-bottom: 1.1rem;
+  }
+
+  .category-form-field label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: #453a34;
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+
+  .category-form-field label span {
+    color: #ff5252;
+  }
+
+  .category-page .form-control {
+    width: 100%;
+    min-height: 49px;
+    padding: 0.75rem 0.9rem;
+    color: #2d2420 !important;
+    background: #fffdfb !important;
+    border: 1.5px solid #eedbd1 !important;
+    border-radius: 14px !important;
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .category-page textarea.form-control {
+    min-height: 125px;
+    resize: vertical;
+  }
+
+  .category-page .form-control:focus {
+    background: #ffffff !important;
+    border-color: #ff7034 !important;
+    box-shadow: 0 0 0 4px rgba(255, 112, 52, 0.12) !important;
+  }
+
+  .category-page .form-control::placeholder {
+    color: #a1938c;
+  }
+
+  .category-help {
+    display: block;
+    margin-top: 0.4rem;
+    color: #93867e;
+    font-size: 0.65rem;
+    line-height: 1.45;
+  }
+
+  .category-example {
+    display: inline-block;
+    margin-top: 0.35rem;
+    padding: 0.3rem 0.5rem;
+    color: #b34c17;
+    background: #fff1e8;
+    border-radius: 7px;
+    font-family: monospace;
+    font-size: 0.65rem;
+  }
+
+  .category-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 47px;
+    padding: 0 1rem;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff7034, #ff5252);
+    border: none;
+    border-radius: 13px;
+    box-shadow: 0 9px 22px rgba(255, 82, 82, 0.22);
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .category-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 13px 27px rgba(255, 82, 82, 0.32);
+  }
+
+  /* Error */
+  .category-page .errorlist {
+    padding: 0;
+    margin: 0.4rem 0 0;
+    list-style: none;
+  }
+
+  .category-page .errorlist li {
+    color: #c62828;
+    font-size: 0.68rem;
+    font-weight: 600;
+  }
+
+  /* Table */
+  .category-table-wrap {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .category-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+  }
+
+  .category-table thead th {
+    padding: 0.9rem 1rem;
+    color: #a94b20;
+    background: #fff8f3;
+    border-bottom: 1px solid #ffdecc;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .category-table tbody td {
+    padding: 1rem;
+    color: #2d2420;
+    background: #ffffff;
+    border-bottom: 1px solid #ffebe1;
+    font-size: 0.77rem;
+    vertical-align: middle;
+  }
+
+  .category-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .category-table tbody tr:hover td {
+    background: #fffaf7;
+  }
+
+  .category-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    color: #f25c05;
+    background: #fff0e7;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+
+  .category-name {
+    display: block;
+    color: #2d2420;
+    font-weight: 800;
+  }
+
+  .category-description {
+    display: block;
+    max-width: 235px;
+    margin-top: 0.25rem;
+    color: #8b7e76;
+    font-size: 0.66rem;
+    line-height: 1.45;
+  }
+
+  .category-slug {
+    display: inline-block;
+    padding: 0.35rem 0.55rem;
+    color: #655a53;
+    background: #f5f2f0;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.66rem;
+    white-space: nowrap;
+  }
+
+  .category-event-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-width: 78px;
+    padding: 0.4rem 0.65rem;
+    color: #08699e;
+    background: #e8f6ff;
+    border: 1px solid #9bd8f5;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* Empty */
+  .category-empty {
+    padding: 4rem 1rem;
+    text-align: center;
+  }
+
+  .category-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 0.85rem;
+    color: #f25c05;
+    background: #fff0e7;
+    border-radius: 17px;
+    font-size: 1.2rem;
+  }
+
+  .category-empty h5 {
+    margin: 0;
+    color: #2d2420;
+    font-weight: 800;
+  }
+
+  .category-empty p {
+    margin: 0.35rem 0 0;
+    color: #8a7c74;
+    font-size: 0.76rem;
+  }
+
+  @media (max-width: 767.98px) {
+    .category-page-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .category-total {
+      width: 100%;
+    }
+
+    .category-card-header,
+    .category-form-body {
+      padding-right: 1.1rem;
+      padding-left: 1.1rem;
+    }
+
+    .category-table-wrap {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .category-table {
+      min-width: 720px;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="category-page">
 
-  <div class="row g-4">
-    <!-- Add Category Form -->
-    <div class="col-md-4">
-      <div class="glass-card p-4">
-        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-plus-circle text-info me-2"></i> Tambah Kategori</h4>
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">Nama Kategori</label>
-            {{ form.name }}
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">FontAwesome Icon Class</label>
-            {{ form.icon }}
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">Deskripsi</label>
-            {{ form.description }}
-          </div>
-          <button type="submit" class="btn btn-gradient w-100 py-2">
-            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Kategori
-          </button>
-        </form>
-      </div>
+  <!-- Header -->
+  <div class="category-page-header">
+    <div>
+      <span class="category-page-label">
+        <i class="fa-solid fa-tags"></i>
+        Master Data Event
+      </span>
+
+      <h2>Kelola Kategori Event</h2>
+
+      <p>
+        Tambahkan dan lihat kategori yang digunakan untuk mengelompokkan event.
+      </p>
     </div>
 
-    <!-- Category List Table -->
-    <div class="col-md-8">
-      <div class="glass-card p-4">
-        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-tags text-primary me-2"></i> Daftar Kategori Event</h4>
-        <div class="table-responsive">
-          <table class="table table-glass align-middle mb-0">
-            <thead>
-              <tr>
-                <th>Icon</th>
-                <th>Nama Kategori</th>
-                <th>Slug</th>
-                <th>Jumlah Event</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for cat in categories %}
-                <tr>
-                  <td><i class="fa-solid {{ cat.icon }} fs-4 text-info"></i></td>
-                  <td class="fw-bold text-white">{{ cat.name }}</td>
-                  <td class="font-monospace text-muted small">{{ cat.slug }}</td>
-                  <td><span class="badge bg-primary bg-opacity-25 text-primary">{{ cat.events.count }} Event</span></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+    <div class="category-total">
+      <div class="category-total-icon">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+
+      <div>
+        <strong>{{ categories|length }}</strong>
+        <small>Total kategori tersedia</small>
       </div>
     </div>
   </div>
 
+  <div class="row g-4 align-items-start">
+
+    <!-- Form Tambah Kategori -->
+    <div class="col-lg-4">
+      <section class="category-card">
+
+        <div class="category-card-header">
+          <div class="category-card-header-icon">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+
+          <div>
+            <h4>Tambah Kategori</h4>
+            <p>Masukkan informasi kategori baru.</p>
+          </div>
+        </div>
+
+        <form method="post" class="category-form-body" novalidate>
+          {% csrf_token %}
+
+          <div class="category-form-field">
+            <label for="{{ form.name.id_for_label }}">
+              Nama Kategori
+              <span>*</span>
+            </label>
+
+            {{ form.name }}
+            {{ form.name.errors }}
+
+            <small class="category-help">
+              Contoh: Main Stage, Beach Festival, atau Camping Zone.
+            </small>
+          </div>
+
+          <div class="category-form-field">
+            <label for="{{ form.icon.id_for_label }}">
+              FontAwesome Icon Class
+              <span>*</span>
+            </label>
+
+            {{ form.icon }}
+            {{ form.icon.errors }}
+
+            <small class="category-help">
+              Masukkan nama class ikon FontAwesome.
+            </small>
+
+            <span class="category-example">
+              fa-music
+            </span>
+          </div>
+
+          <div class="category-form-field">
+            <label for="{{ form.description.id_for_label }}">
+              Deskripsi
+            </label>
+
+            {{ form.description }}
+            {{ form.description.errors }}
+
+            <small class="category-help">
+              Tuliskan penjelasan singkat mengenai kategori.
+            </small>
+          </div>
+
+          <button type="submit" class="category-submit">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Simpan Kategori
+          </button>
+        </form>
+
+      </section>
+    </div>
+
+    <!-- Daftar Kategori -->
+    <div class="col-lg-8">
+      <section class="category-card">
+
+        <div class="category-card-header">
+          <div class="category-card-header-icon">
+            <i class="fa-solid fa-list"></i>
+          </div>
+
+          <div>
+            <h4>Daftar Kategori Event</h4>
+            <p>Kategori yang tersedia pada aplikasi Summer Pop Festival.</p>
+          </div>
+        </div>
+
+        {% if categories %}
+          <div class="category-table-wrap">
+            <div class="table-responsive">
+              <table class="category-table">
+
+                <thead>
+                  <tr>
+                    <th>Ikon</th>
+                    <th>Informasi Kategori</th>
+                    <th>Slug</th>
+                    <th>Jumlah Event</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for cat in categories %}
+                    <tr>
+
+                      <td>
+                        <div class="category-icon-box">
+                          <i class="fa-solid {{ cat.icon }}"></i>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span class="category-name">
+                          {{ cat.name }}
+                        </span>
+
+                        {% if cat.description %}
+                          <span class="category-description">
+                            {{ cat.description|truncatechars:90 }}
+                          </span>
+                        {% else %}
+                          <span class="category-description">
+                            Belum ada deskripsi kategori.
+                          </span>
+                        {% endif %}
+                      </td>
+
+                      <td>
+                        <span class="category-slug">
+                          {{ cat.slug }}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span class="category-event-count">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          {{ cat.events.count }} Event
+                        </span>
+                      </td>
+
+                    </tr>
+                  {% endfor %}
+                </tbody>
+
+              </table>
+            </div>
+          </div>
+
+        {% else %}
+          <div class="category-empty">
+            <div class="category-empty-icon">
+              <i class="fa-solid fa-tags"></i>
+            </div>
+
+            <h5>Belum Ada Kategori</h5>
+
+            <p>
+              Tambahkan kategori pertama melalui formulir di sebelah kiri.
+            </p>
+          </div>
+        {% endif %}
+
+      </section>
+    </div>
+
+  </div>
 </div>
 {% endblock %}
