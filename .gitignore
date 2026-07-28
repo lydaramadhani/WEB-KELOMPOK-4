@@ -4,5 +4,6 @@ db.sqlite3
 .env
 env/
 venv/
+.venv/
 .vscode/
 media/
