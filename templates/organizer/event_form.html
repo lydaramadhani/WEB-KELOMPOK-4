@@ -1,76 +1,277 @@
 {% extends 'base.html' %}
-{% block title %}{{ title }} - Eventify{% endblock %}
+
+{% block title %}
+  {{ title }} - Summer Pop Festival
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-5 event-form-page">
   <div class="row justify-content-center">
-    <div class="col-md-9">
+    <div class="col-xl-9 col-lg-10">
 
-      <div class="glass-card p-4 p-md-5">
-        <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-calendar-plus text-info me-2"></i> {{ title }}</h3>
-        <p class="text-muted small mb-4">Isi rincian informasi kegiatan dan konfigurasi tiket</p>
+      <div class="event-form-card">
 
-        <form method="post" enctype="multipart/form-data">
+        <!-- Header -->
+        <div class="event-form-header">
+          <div class="event-form-header-icon">
+            <i class="fa-solid fa-calendar-plus"></i>
+          </div>
+
+          <div>
+            <span class="event-form-kicker">
+              Pengelolaan Acara
+            </span>
+
+            <h2>{{ title }}</h2>
+
+            <p>
+              Lengkapi informasi acara, jadwal, harga, dan kapasitas tiket.
+            </p>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          class="event-form-body"
+          novalidate
+        >
           {% csrf_token %}
 
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">Judul Event</label>
-            {{ form.title }}
-          </div>
+          {% if form.non_field_errors %}
+            <div class="event-form-alert">
+              <i class="fa-solid fa-circle-exclamation"></i>
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Kategori Event</label>
-              {{ form.category }}
+              <div>
+                {% for error in form.non_field_errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Status Event</label>
-              {{ form.status }}
+          {% endif %}
+
+          <!-- Informasi Utama -->
+          <section class="event-form-section">
+            <div class="event-form-section-heading">
+              <span class="event-form-section-number">01</span>
+
+              <div>
+                <h5>Informasi Utama</h5>
+                <p>Masukkan identitas dan lokasi pelaksanaan acara.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">Lokasi / Venue</label>
-            {{ form.venue }}
-          </div>
+            <div class="event-form-grid">
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Waktu Mulai</label>
-              {{ form.start_date }}
+              <!-- Judul -->
+              <div class="event-form-field event-form-field-full">
+                <label for="{{ form.title.id_for_label }}">
+                  Judul Event
+                  <span>*</span>
+                </label>
+
+                {{ form.title }}
+                {{ form.title.errors }}
+              </div>
+
+              <!-- Kategori -->
+              <div class="event-form-field">
+                <label for="{{ form.category.id_for_label }}">
+                  Kategori Event
+                  <span>*</span>
+                </label>
+
+                {{ form.category }}
+                {{ form.category.errors }}
+              </div>
+
+              <!-- Status -->
+              <div class="event-form-field">
+                <label for="{{ form.status.id_for_label }}">
+                  Status Event
+                  <span>*</span>
+                </label>
+
+                {{ form.status }}
+                {{ form.status.errors }}
+              </div>
+
+              <!-- Venue -->
+              <div class="event-form-field event-form-field-full">
+                <label for="{{ form.venue.id_for_label }}">
+                  Lokasi atau Venue
+                  <span>*</span>
+                </label>
+
+                {{ form.venue }}
+                {{ form.venue.errors }}
+
+                <small class="event-form-help">
+                  Tuliskan nama tempat dan kota pelaksanaan acara.
+                </small>
+              </div>
+
             </div>
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Waktu Selesai</label>
-              {{ form.end_date }}
+          </section>
+
+          <!-- Jadwal -->
+          <section class="event-form-section">
+            <div class="event-form-section-heading">
+              <span class="event-form-section-number">02</span>
+
+              <div>
+                <h5>Jadwal Pelaksanaan</h5>
+                <p>Tentukan waktu mulai dan selesai acara.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Harga Tiket (Rp)</label>
-              {{ form.ticket_price }}
+            <div class="event-form-grid">
+
+              <!-- Mulai -->
+              <div class="event-form-field">
+                <label for="{{ form.start_date.id_for_label }}">
+                  Waktu Mulai
+                  <span>*</span>
+                </label>
+
+                {{ form.start_date }}
+                {{ form.start_date.errors }}
+              </div>
+
+              <!-- Selesai -->
+              <div class="event-form-field">
+                <label for="{{ form.end_date.id_for_label }}">
+                  Waktu Selesai
+                  <span>*</span>
+                </label>
+
+                {{ form.end_date }}
+                {{ form.end_date.errors }}
+              </div>
+
             </div>
-            <div class="col-md-6">
-              <label class="form-label text-light small fw-semibold">Total Kuota Tiket</label>
-              {{ form.total_quota }}
+          </section>
+
+          <!-- Tiket -->
+          <section class="event-form-section">
+            <div class="event-form-section-heading">
+              <span class="event-form-section-number">03</span>
+
+              <div>
+                <h5>Konfigurasi Tiket</h5>
+                <p>Tentukan harga dasar dan total kuota tiket.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-3">
-            <label class="form-label text-light small fw-semibold">Deskripsi Event Lengkap</label>
-            {{ form.description }}
-          </div>
+            <div class="event-form-grid">
 
-          <div class="mb-4">
-            <label class="form-label text-light small fw-semibold">Poster Event Image</label>
-            {{ form.poster }}
-          </div>
+              <!-- Harga -->
+              <div class="event-form-field">
+                <label for="{{ form.ticket_price.id_for_label }}">
+                  Harga Tiket
+                  <span>*</span>
+                </label>
 
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-gradient px-4 py-2.5">
-              <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Event
+                <div class="event-form-price-input">
+                  <span>Rp</span>
+                  {{ form.ticket_price }}
+                </div>
+
+                {{ form.ticket_price.errors }}
+
+                <small class="event-form-help">
+                  Masukkan angka tanpa titik atau simbol Rupiah.
+                </small>
+              </div>
+
+              <!-- Kuota -->
+              <div class="event-form-field">
+                <label for="{{ form.total_quota.id_for_label }}">
+                  Total Kuota Tiket
+                  <span>*</span>
+                </label>
+
+                {{ form.total_quota }}
+                {{ form.total_quota.errors }}
+
+                <small class="event-form-help">
+                  Jumlah maksimal tiket yang dapat dijual.
+                </small>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Detail -->
+          <section class="event-form-section">
+            <div class="event-form-section-heading">
+              <span class="event-form-section-number">04</span>
+
+              <div>
+                <h5>Detail dan Poster</h5>
+                <p>Tambahkan deskripsi lengkap dan gambar acara.</p>
+              </div>
+            </div>
+
+            <div class="event-form-grid">
+
+              <!-- Deskripsi -->
+              <div class="event-form-field event-form-field-full">
+                <label for="{{ form.description.id_for_label }}">
+                  Deskripsi Event
+                  <span>*</span>
+                </label>
+
+                {{ form.description }}
+                {{ form.description.errors }}
+
+                <small class="event-form-help">
+                  Jelaskan konsep acara, fasilitas, dan informasi penting lainnya.
+                </small>
+              </div>
+
+              <!-- Poster -->
+              <div class="event-form-field event-form-field-full">
+                <label for="{{ form.poster.id_for_label }}">
+                  Poster Event
+                </label>
+
+                <div class="event-form-upload">
+                  <div class="event-form-upload-icon">
+                    <i class="fa-solid fa-image"></i>
+                  </div>
+
+                  <div class="event-form-upload-content">
+                    <strong>Unggah poster acara</strong>
+                    <small>Gunakan gambar JPG, PNG, atau WebP.</small>
+                    {{ form.poster }}
+                  </div>
+                </div>
+
+                {{ form.poster.errors }}
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Action -->
+          <div class="event-form-actions">
+            <a
+              href="{% url 'organizer_event_list' %}"
+              class="event-form-cancel"
+            >
+              <i class="fa-solid fa-arrow-left"></i>
+              Batal
+            </a>
+
+            <button
+              type="submit"
+              class="event-form-submit"
+            >
+              <i class="fa-solid fa-floppy-disk"></i>
+              Simpan Event
             </button>
-            <a href="{% url 'organizer_event_list' %}" class="btn btn-outline-glass py-2.5">Batal</a>
           </div>
 
         </form>

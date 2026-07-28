@@ -1,99 +1,288 @@
 {% extends 'base.html' %}
-{% block title %}Verifikasi Pesanan & Pembayaran - Summer Pop Festival{% endblock %}
+{% load custom_filters %}
+
+{% block title %}
+  Verifikasi Pesanan dan Pembayaran - Summer Pop Festival
+{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-5 verification-page">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <!-- Header -->
+  <div class="verification-page-header">
     <div>
-      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">💳 Verifikasi Pesanan & Pembayaran Tiket</h3>
-      <p class="text-muted small mb-0">Tinjau bukti pembayaran transfer/QRIS dari pembeli dan terbitkan E-Ticket QR Code</p>
+      <span class="verification-page-label">
+        <i class="fa-solid fa-credit-card"></i>
+        Pengelolaan Pembayaran
+      </span>
+
+      <h2>Verifikasi Pesanan & Pembayaran Tiket</h2>
+
+      <p>
+        Tinjau pembayaran customer dan kelola status transaksi tiket.
+      </p>
+    </div>
+
+    <div class="verification-summary">
+      <span>{{ orders|length }}</span>
+      <small>Pesanan ditemukan</small>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="cute-card p-3 mb-4">
-    <form method="get" class="row g-2">
-      <div class="col-md-5">
-        <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Cari Kode Order / Nama Pembeli...">
+  <!-- Filter -->
+  <div class="verification-filter-card">
+    <form method="get" class="verification-filter-form">
+
+      <div class="verification-search-field">
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+          type="text"
+          name="q"
+          value="{{ search_query }}"
+          placeholder="Cari kode order atau nama pembeli..."
+          autocomplete="off"
+        >
       </div>
-      <div class="col-md-4">
-        <select name="status" class="form-select">
-          <option value="">Semua Status Pembayaran</option>
-          <option value="PENDING" {% if selected_status == 'PENDING' %}selected{% endif %}>Menunggu Verifikasi (Pending)</option>
-          <option value="PAID" {% if selected_status == 'PAID' %}selected{% endif %}>Lunas / Disetujui</option>
-          <option value="REJECTED" {% if selected_status == 'REJECTED' %}selected{% endif %}>Ditolak</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <button type="submit" class="btn btn-coral w-100 font-weight-bold">Filter 🔍</button>
-      </div>
+
+      <select
+        name="status"
+        class="verification-status-select"
+        aria-label="Filter status pembayaran"
+      >
+        <option value="">Semua Status Pembayaran</option>
+
+        <option
+          value="PENDING"
+          {% if selected_status == 'PENDING' %}selected{% endif %}
+        >
+          Menunggu Verifikasi
+        </option>
+
+        <option
+          value="PAID"
+          {% if selected_status == 'PAID' %}selected{% endif %}
+        >
+          Lunas / Disetujui
+        </option>
+
+        <option
+          value="REJECTED"
+          {% if selected_status == 'REJECTED' %}selected{% endif %}
+        >
+          Ditolak
+        </option>
+      </select>
+
+      <button type="submit" class="verification-filter-button">
+        <i class="fa-solid fa-filter"></i>
+        Terapkan Filter
+      </button>
+
     </form>
   </div>
 
-  <!-- Orders Table -->
-  <div class="cute-card p-4">
+  <!-- Orders -->
+  <div class="verification-table-card">
+
+    <div class="verification-table-header">
+      <div>
+        <h5>Daftar Transaksi</h5>
+
+        <p>
+          Periksa detail pesanan dan bukti pembayaran customer.
+        </p>
+      </div>
+
+      {% if search_query or selected_status %}
+        <a
+          href="{% url 'organizer_order_list' %}"
+          class="verification-reset-button"
+        >
+          <i class="fa-solid fa-rotate-left"></i>
+          Reset Filter
+        </a>
+      {% endif %}
+    </div>
+
     {% if orders %}
       <div class="table-responsive">
-        <table class="table table-cute align-middle mb-0">
+        <table class="verification-table">
+
           <thead>
             <tr>
-              <th>Kode Order</th>
+              <th>Pesanan</th>
               <th>Pembeli</th>
-              <th>Event Tour</th>
-              <th>Qty</th>
-              <th>Total Tagihan</th>
-              <th>Bukti Transfer</th>
+              <th>Event</th>
+              <th>Tiket</th>
+              <th>Total</th>
+              <th>Bukti Bayar</th>
               <th>Status</th>
-              <th>Aksi Verifikasi</th>
+              <th class="text-center">Aksi</th>
             </tr>
           </thead>
+
           <tbody>
             {% for order in orders %}
               <tr>
+
+                <!-- Pesanan -->
                 <td>
-                  <a href="{% url 'organizer_order_detail' pk=order.pk %}" class="font-monospace text-orange text-decoration-none fw-bold">
+                  <a
+                    href="{% url 'organizer_order_detail' pk=order.pk %}"
+                    class="verification-order-code"
+                  >
                     {{ order.order_code }}
                   </a>
-                </td>
-                <td class="fw-semibold text-dark">
-                  {{ order.buyer.get_full_name|default:order.buyer.username }}
-                  <small class="d-block text-muted">{{ order.buyer.email }}</small>
-                </td>
-                <td>{{ order.event.title|truncatewords:4 }}</td>
-                <td>{{ order.quantity }} lembar</td>
-                <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0 }}</td>
-                <td>
-                  {% if order.payment_proof %}
-                    <a href="{{ order.payment_proof.url }}" target="_blank" class="btn btn-outline-cute btn-sm text-orange">
-                      🖼️ Lihat Bukti
-                    </a>
-                  {% else %}
-                    <span class="badge bg-warning bg-opacity-25 text-dark">Belum Upload</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <span class="badge-status badge-{{ order.payment_status|lower }}">
-                    {{ order.get_payment_status_display }}
+
+                  <span class="verification-order-date">
+                    {{ order.created_at|date:"d M Y, H:i" }} WIB
                   </span>
                 </td>
+
+                <!-- Pembeli -->
                 <td>
-                  <a href="{% url 'organizer_order_detail' pk=order.pk %}" class="btn btn-coral btn-sm text-white font-weight-bold">
-                    Tinjau & Setujui
-                  </a>
+                  <div class="verification-buyer">
+                    <div class="verification-buyer-avatar">
+                      {{ order.buyer.first_name|default:order.buyer.username|first|upper }}
+                    </div>
+
+                    <div>
+                      <strong>
+                        {{ order.buyer.get_full_name|default:order.buyer.username }}
+                      </strong>
+
+                      <small>
+                        {{ order.buyer.email }}
+                      </small>
+                    </div>
+                  </div>
                 </td>
+
+                <!-- Event -->
+                <td>
+                  <div class="verification-event-title">
+                    {{ order.event.title|truncatechars:34 }}
+                  </div>
+
+                  <small class="verification-event-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ order.event.venue|truncatechars:30 }}
+                  </small>
+                </td>
+
+                <!-- Jumlah -->
+                <td>
+                  <span class="verification-quantity">
+                    {{ order.quantity }}
+                  </span>
+
+                  <small class="verification-quantity-label">
+                    tiket
+                  </small>
+                </td>
+
+                <!-- Total -->
+                <td>
+                  <span class="verification-total">
+                    Rp {{ order.total_amount|rupiah }}
+                  </span>
+                </td>
+
+                <!-- Bukti -->
+                <td>
+                  {% if order.payment_proof %}
+                    <a
+                      href="{{ order.payment_proof.url }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="verification-proof-button"
+                    >
+                      <i class="fa-regular fa-image"></i>
+                      Lihat Bukti
+                    </a>
+                  {% else %}
+                    <span class="verification-no-proof">
+                      <i class="fa-solid fa-circle-minus"></i>
+                      Belum Upload
+                    </span>
+                  {% endif %}
+                </td>
+
+                <!-- Status -->
+                <td>
+                  {% if order.payment_status == 'PENDING' %}
+                    <span class="verification-status verification-status-pending">
+                      <i class="fa-solid fa-clock"></i>
+                      Menunggu
+                    </span>
+
+                  {% elif order.payment_status == 'PAID' %}
+                    <span class="verification-status verification-status-paid">
+                      <i class="fa-solid fa-check"></i>
+                      Disetujui
+                    </span>
+
+                  {% elif order.payment_status == 'REJECTED' %}
+                    <span class="verification-status verification-status-rejected">
+                      <i class="fa-solid fa-xmark"></i>
+                      Ditolak
+                    </span>
+
+                  {% else %}
+                    <span class="verification-status verification-status-default">
+                      {{ order.get_payment_status_display }}
+                    </span>
+                  {% endif %}
+                </td>
+
+                <!-- Aksi -->
+                <td class="text-center">
+                  {% if order.payment_status == 'PENDING' %}
+                    <a
+                      href="{% url 'organizer_order_detail' pk=order.pk %}"
+                      class="verification-action verification-action-primary"
+                    >
+                      Tinjau
+                    </a>
+                  {% else %}
+                    <a
+                      href="{% url 'organizer_order_detail' pk=order.pk %}"
+                      class="verification-action verification-action-secondary"
+                    >
+                      Detail
+                    </a>
+                  {% endif %}
+                </td>
+
               </tr>
             {% endfor %}
           </tbody>
+
         </table>
       </div>
+
     {% else %}
-      <div class="text-center py-5">
-        <div class="fs-1 text-muted mb-2">📋</div>
-        <h4 class="text-dark fw-bold" style="font-family: 'Outfit', sans-serif;">Tidak Ada Pesanan</h4>
-        <p class="text-muted">Tidak ditemukan pesanan tiket sesuai dengan filter ini.</p>
+      <div class="verification-empty-state">
+        <div class="verification-empty-icon">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+
+        <h4>Tidak Ada Pesanan</h4>
+
+        <p>
+          Tidak ditemukan pesanan yang sesuai dengan pencarian atau filter.
+        </p>
+
+        <a
+          href="{% url 'organizer_order_list' %}"
+          class="verification-empty-button"
+        >
+          Tampilkan Semua Pesanan
+        </a>
       </div>
     {% endif %}
+
   </div>
 
 </div>

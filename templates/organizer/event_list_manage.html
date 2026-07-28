@@ -102,15 +102,41 @@
                 <td>
                   <small class="fw-bold text-dark">{{ event.quota_sold }} / {{ event.total_quota }}</small>
                 </td>
-                <td>
-                  {% if event.status == 'PENDING_APPROVAL' %}
-                    <span class="badge bg-warning text-dark">Menunggu Admin</span>
-                  {% else %}
-                    <span class="badge-status badge-{{ event.status|lower }}">
-                      {{ event.get_status_display }}
-                    </span>
-                  {% endif %}
-                </td>
+              <td class="event-status-cell">
+                {% if event.status == 'PENDING_APPROVAL' %}
+                  <span class="event-status-pill event-status-pending">
+                    Menunggu Persetujuan
+                  </span>
+
+                {% elif event.status == 'UPCOMING' %}
+                  <span class="event-status-pill event-status-upcoming">
+                    Upcoming
+                    <span class="event-status-separator">•</span>
+                    Disetujui
+                  </span>
+
+                {% elif event.status == 'ONGOING' %}
+                  <span class="event-status-pill event-status-ongoing">
+                    Sedang Berlangsung
+                  </span>
+
+                {% elif event.status == 'FINISHED' %}
+                  <span class="event-status-pill event-status-finished">
+                    Selesai
+                  </span>
+
+                {% elif event.status == 'CANCELLED' %}
+                  <span class="event-status-pill event-status-cancelled">
+                    Dibatalkan
+                  </span>
+
+                {% else %}
+                  <span class="event-status-pill event-status-default">
+                    {{ event.get_status_display }}
+                  </span>
+                {% endif %}
+              </td>
+
                 <td>
                   <div class="d-flex gap-1">
                     <a href="{% url 'organizer_event_edit' pk=event.pk %}" class="btn btn-outline-cute btn-sm">
