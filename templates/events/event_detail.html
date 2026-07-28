@@ -39,34 +39,43 @@
 
         <h2 class="fw-bold text-dark mb-3" style="font-family: 'Outfit', sans-serif;">{{ event.title }}</h2>
 
-        <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle bg-warning bg-opacity-25 p-3 text-orange fs-4">
-                  🗓️
-                </div>
-                <div>
-                  <small class="text-muted d-block fw-semibold">Tanggal & Jam</small>
-                  <strong class="text-dark">{{ event.start_date|date:"d F Y, H:i" }} WIB</strong>
-                  <div class="small text-muted">s/d {{ event.end_date|date:"d F Y, H:i" }} WIB</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle bg-danger bg-opacity-15 p-3 text-danger fs-4">
-                  📍
-                </div>
-                <div>
-                  <small class="text-muted d-block fw-semibold">Lokasi Venue Tour</small>
-                  <strong class="text-dark">{{ event.venue }}</strong>
-                </div>
-              </div>
-            </div>
+        <div class="event-meta-wrap mb-4">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="event-meta-card">
+        <div class="event-meta-icon event-meta-icon-calendar">
+          🗓️
+        </div>
+        <div class="event-meta-content">
+          <span class="event-meta-label">Tanggal & Jam</span>
+          <div class="event-meta-title">
+            {{ event.start_date|date:"d F Y, H:i" }} WIB
+          </div>
+          <div class="event-meta-subtitle">
+            s/d {{ event.end_date|date:"d F Y, H:i" }} WIB
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="event-meta-card">
+        <div class="event-meta-icon event-meta-icon-location">
+          📍
+        </div>
+        <div class="event-meta-content">
+          <span class="event-meta-label">Lokasi Venue Tour</span>
+          <div class="event-meta-title">
+            {{ event.venue }}
+          </div>
+          <div class="event-meta-subtitle">
+            Venue resmi pelaksanaan konser
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 
         <!-- Description -->
         <h4 class="fw-bold text-dark mb-3" style="font-family: 'Outfit', sans-serif;">Deskripsi Tour & Lineup</h4>
@@ -153,18 +162,37 @@
         </div>
 
         <!-- Selected Tier Live Price Display -->
-        <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <small class="text-muted fw-bold">Harga Tiket Terpilih:</small>
-            <span class="badge bg-warning text-dark font-weight-bold" id="selected_tier_badge">Regular Pass</span>
+                <!-- Selected Ticket Price -->
+        <div class="selected-ticket-box mb-4">
+
+          <div class="selected-ticket-head">
+            <span class="selected-ticket-label">
+              Harga Tiket Terpilih
+            </span>
+
+            <span
+              class="selected-ticket-badge"
+              id="selected_tier_badge"
+            >
+              Regular Pass
+            </span>
           </div>
-          <div class="fs-2 fw-extrabold text-orange" id="live_ticket_price" style="font-family: 'Outfit', sans-serif;">
+
+          <div
+            class="selected-ticket-price"
+            id="live_ticket_price"
+          >
             Rp {{ event.ticket_price|rupiah }}
           </div>
-          <small class="text-muted d-block mt-1" id="tier_perks_text">
-            ✓ Akses area festival & stage umum<br>
-            ✓ Akses area kuliner & tenant booth
-          </small>
+
+          <div
+            class="selected-ticket-perks"
+            id="tier_perks_text"
+          >
+            <div>✓ Akses area festival & stage umum</div>
+            <div>✓ Akses area kuliner & tenant booth</div>
+          </div>
+
         </div>
 
         <!-- Quota Progress Bar -->
