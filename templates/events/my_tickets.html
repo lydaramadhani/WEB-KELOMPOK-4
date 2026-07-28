@@ -1,31 +1,61 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
+
 {% block title %}Tiket Saya - Summer Pop Festival 2026{% endblock %}
-
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 ticket-page">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h3 class="fw-bold text-dark mb-1" style="font-family: 'Fredoka', sans-serif;">🎫 Tiket & Pesanan Saya</h3>
-      <p class="text-muted small mb-0">Summer Pop Festival 2026 Multi-City Tour</p>
+  <div class="ticket-page-header mb-4">
+  <div>
+    <div class="ticket-page-label">
+      <i class="fa-solid fa-ticket"></i>
+      Pusat Tiket
     </div>
-    <a href="{% url 'home' %}" class="btn btn-coral">
-      ✨ Beli Tiket Tour Lain
-    </a>
+
+    <h2 class="ticket-page-title">
+      Tiket & Pesanan Saya
+    </h2>
+
+    <p class="ticket-page-subtitle">
+      Kelola e-ticket dan lihat seluruh riwayat pesananmu.
+    </p>
+  </div>
+
+  <a href="{% url 'home' %}" class="ticket-shop-button">
+    <i class="fa-solid fa-plus"></i>
+    Beli Tiket Tour Lain
+  </a>
   </div>
 
   <!-- Tabs Navigation -->
-  <ul class="nav nav-pills mb-4 cute-card p-1.5 d-inline-flex border-0" id="ticketTabs">
-    <li class="nav-item">
-      <button class="nav-link active rounded-pill text-dark fw-bold px-4" id="tickets-tab" data-bs-toggle="pill" data-bs-target="#tickets-content">
-        🎟️ E-Ticket Aktif ({{ tickets|length }})
-      </button>
-    </li>
-    <li class="nav-item">
-      <button class="nav-link rounded-pill text-dark fw-bold px-4" id="orders-tab" data-bs-toggle="pill" data-bs-target="#orders-content">
-        📋 Riwayat Pesanan ({{ orders|length }})
-      </button>
-    </li>
+ <ul class="nav nav-pills ticket-tabs mb-4" id="ticketTabs">
+  <li class="nav-item">
+    <button
+      type="button"
+      class="nav-link active"
+      id="tickets-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#tickets-content"
+    >
+      <i class="fa-solid fa-ticket"></i>
+      E-Ticket Aktif
+      <span class="ticket-tab-count">{{ tickets|length }}</span>
+    </button>
+  </li>
+
+  <li class="nav-item">
+    <button
+      type="button"
+      class="nav-link"
+      id="orders-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#orders-content"
+    >
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      Riwayat Pesanan
+      <span class="ticket-tab-count">{{ orders|length }}</span>
+    </button>
+  </li>
   </ul>
 
   <div class="tab-content" id="ticketTabsContent">
@@ -86,55 +116,112 @@
 
     <!-- Orders History Tab -->
     <div class="tab-pane fade" id="orders-content">
-      {% if orders %}
-        <div class="table-responsive cute-card p-3">
-          <table class="table table-cute align-middle mb-0">
-            <thead>
+    {% if orders %}
+
+    <div class="order-history-card">
+      <div class="order-history-heading">
+        <div>
+          <h4>Riwayat Pesanan</h4>
+          <p>Daftar transaksi tiket yang pernah kamu lakukan.</p>
+        </div>
+
+        <span class="order-history-count">
+          {{ orders|length }} Pesanan
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table order-history-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Kode Pesanan</th>
+              <th>Event Tour</th>
+              <th>Jumlah</th>
+              <th>Total Tagihan</th>
+              <th>Metode Pembayaran</th>
+              <th>Status</th>
+              <th class="text-center">Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for order in orders %}
               <tr>
-                <th>Kode Pesanan</th>
-                <th>Event Tour</th>
-                <th>Jumlah</th>
-                <th>Total Tagihan</th>
-                <th>Metode</th>
-                <th>Status Pembayaran</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for order in orders %}
-                <tr>
-                  <td class="font-monospace fw-bold text-orange">{{ order.order_code }}</td>
-                  <td class="fw-semibold text-dark">{{ order.event.title|truncatewords:4 }}</td>
-                  <td>{{ order.quantity }} Lembar</td>
-                  <td class="fw-bold text-dark">Rp {{ order.total_amount|floatformat:0 }}</td>
-                  <td><small class="text-muted">{{ order.get_payment_method_display }}</small></td>
-                  <td>
-                    <span class="badge-status badge-{{ order.payment_status|lower }}">
-                      {{ order.get_payment_status_display }}
+                <td>
+                  <span class="order-code">
+                    {{ order.order_code }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="order-event-name">
+                    {{ order.event.title }}
+                  </div>
+
+                  {% if order.event.venue %}
+                    <small class="order-event-venue">
+                      <i class="fa-solid fa-location-dot"></i>
+                      {{ order.event.venue }}
+                    </small>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <span class="order-quantity">
+                    {{ order.quantity }} tiket
+                  </span>
+                </td>
+
+                <td>
+                  <span class="order-total">
+                    Rp {{ order.total_amount|rupiah }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="payment-method">
+                    {{ order.get_payment_method_display }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="badge-status badge-{{ order.payment_status|lower }}">
+                    {{ order.get_payment_status_display }}
+                  </span>
+                </td>
+
+                <td class="text-center">
+                  {% if order.payment_status == 'PENDING' %}
+                    <a
+                      href="{% url 'order_confirmation' order_code=order.order_code %}"
+                      class="order-action-button"
+                    >
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      Bayar / Upload
+                    </a>
+                  {% else %}
+                    <span class="order-finished">
+                      <i class="fa-solid fa-check"></i>
+                      Selesai
                     </span>
-                  </td>
-                  <td>
-                    {% if order.payment_status == 'PENDING' %}
-                      <a href="{% url 'order_confirmation' order_code=order.order_code %}" class="btn btn-coral btn-sm">
-                        Bayar / Upload
-                      </a>
-                    {% else %}
-                      <span class="text-muted small">-</span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% else %}
-        <div class="cute-card p-5 text-center my-3">
-          <div class="fs-1 text-muted mb-2">📋</div>
-          <h4 class="text-dark fw-bold" style="font-family: 'Fredoka', sans-serif;">Belum Ada Riwayat Pesanan</h4>
-        </div>
-      {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
 
+  {% else %}
+    <div class="cute-card p-5 text-center my-3">
+      <div class="fs-1 text-muted mb-2">📋</div>
+      <h4 class="text-dark fw-bold">Belum Ada Riwayat Pesanan</h4>
+      <p class="text-muted mb-0">
+        Pesanan yang kamu lakukan akan muncul di halaman ini.
+      </p>
+    </div>
+  {% endif %}
   </div>
 
 </div>

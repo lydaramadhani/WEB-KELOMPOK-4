@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
+
 {% block title %}Draft Tagihan Pembayaran - {{ order.order_code }}{% endblock %}
 
 {% block content %}
@@ -50,7 +52,7 @@
             <hr class="my-2 opacity-25">
             <div class="d-flex justify-content-between fs-5 fw-bold text-dark">
               <span>Total Tagihan Draft:</span>
-              <span class="text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ order.total_amount|floatformat:0 }}</span>
+              <span class="text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ order.total_amount|rupiah }}</span>
             </div>
           </div>
         </div>
@@ -73,7 +75,7 @@
                 <strong>Langkah Penukaran & Pembayaran di Venue:</strong>
                 <ol class="ps-3 mt-1 mb-0">
                   <li>Tunjukkan <strong>Kode Draft {{ order.order_code }}</strong> ini kepada petugas di Ticket Box venue.</li>
-                  <li>Lakukan pembayaran tunai atau scan QRIS sebesar <strong>Rp {{ order.total_amount|floatformat:0 }}</strong>.</li>
+                  <li>Lakukan pembayaran tunai atau scan QRIS sebesar <strong>Rp {{ order.total_amount|rupiah }}</strong>.</li>
                   <li>Petugas Organizer akan memverifikasi pesanan Anda dan E-Ticket QR Code resmi akan langsung terbit.</li>
                 </ol>
               </div>
@@ -99,7 +101,7 @@
                     <i class="fa-solid fa-qrcode text-dark display-1"></i>
                     <div class="text-orange fw-bold small mt-1">QRIS NATIONAL STANDARD</div>
                   </div>
-                  <p class="small text-muted mb-0">Scan QRIS di atas via m-Banking / E-Wallet Anda sebesar <strong>Rp {{ order.total_amount|floatformat:0 }}</strong>.</p>
+                  <p class="small text-muted mb-0">Scan QRIS di atas via m-Banking / E-Wallet Anda sebesar <strong>Rp {{ order.total_amount|rupiah }}</strong>.</p>
                 </div>
               {% elif order.payment_method == 'BANK_TRANSFER' %}
                 <div class="vstack gap-2 small">

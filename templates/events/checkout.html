@@ -72,53 +72,128 @@
             </div>
           </div>
 
-          <!-- Payment Method Selection -->
+          <!-- Payment Method -->
           <div class="mb-4">
-            <h5 class="fw-bold text-dark mb-3" style="font-family: 'Fredoka', sans-serif;">💳 Pilih Metode Pembayaran</h5>
+            <h5
+              class="fw-bold text-dark mb-3"
+              style="font-family: 'Fredoka', sans-serif;"
+            >
+              💳 Pilih Metode Pembayaran
+            </h5>
 
             <div class="vstack gap-2">
-              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
-                <input type="radio" name="payment_method" value="QRIS" checked class="form-check-input">
-                <span class="fs-2">📲</span>
-                <div>
-                  <strong class="text-dark d-block">QRIS Instant Payment</strong>
-                  <small class="text-muted">Scan QRIS via m-Banking, GoPay, OVO, Dana, ShopeePay</small>
+
+              <!-- QRIS -->
+              <label class="payment-option">
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="QRIS"
+                  checked
+                  class="form-check-input"
+                >
+
+                <span class="payment-option-icon">📲</span>
+
+                <div class="payment-option-content">
+                  <strong>Pembayaran QRIS</strong>
+
+                  <small>
+                    Scan QRIS melalui m-Banking, GoPay, OVO, DANA,
+                    atau ShopeePay
+                  </small>
                 </div>
               </label>
 
-              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
-                <input type="radio" name="payment_method" value="BANK_TRANSFER" class="form-check-input">
-                <span class="fs-2">🏦</span>
-                <div>
-                  <strong class="text-dark d-block">Transfer Bank (BCA / BNI / BRI)</strong>
-                  <small class="text-muted">Transfer manual ke rekening resmi panitia Summer Pop</small>
+              <!-- Transfer Bank -->
+              <label class="payment-option">
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="BANK_TRANSFER"
+                  class="form-check-input"
+                >
+
+                <span class="payment-option-icon">🏦</span>
+
+                <div class="payment-option-content">
+                  <strong>Transfer Bank (BCA / BNI / BRI)</strong>
+
+                  <small>
+                    Transfer manual ke rekening resmi panitia Summer Pop
+                  </small>
                 </div>
               </label>
 
-              <label class="p-3 rounded-4 border border-light bg-light d-flex align-items-center gap-3 cursor-pointer">
-                <input type="radio" name="payment_method" value="EWALLET" class="form-check-input">
-                <span class="fs-2">👛</span>
-                <div>
-                  <strong class="text-dark d-block">E-Wallet Direct</strong>
-                  <small class="text-muted">Transfer GoPay / OVO / DANA</small>
+              <!-- E-Wallet -->
+              <label class="payment-option">
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="EWALLET"
+                  class="form-check-input"
+                >
+
+                <span class="payment-option-icon">👛</span>
+
+                <div class="payment-option-content">
+                  <strong>E-Wallet</strong>
+
+                  <small>
+                    Transfer melalui GoPay, OVO, atau DANA
+                  </small>
                 </div>
               </label>
 
-              <label class="p-3 rounded-4 border border-warning bg-warning bg-opacity-10 d-flex align-items-center gap-3 cursor-pointer">
-                <input type="radio" name="payment_method" value="COD" class="form-check-input">
-                <span class="fs-2">🎪</span>
-                <div>
-                  <strong class="text-dark d-block">Bayar di Tempat (Loket Ticket Box Venue)</strong>
-                  <small class="text-muted">Bayar Tunai / QRIS saat penukaran tiket di venue konser</small>
+              <!-- Bayar di Tempat -->
+              <label class="payment-option">
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="COD"
+                  class="form-check-input"
+                >
+
+                <span class="payment-option-icon">🎪</span>
+
+                <div class="payment-option-content">
+                  <strong>
+                    Bayar di Tempat (Loket Ticket Box Venue)
+                  </strong>
+
+                  <small>
+                    Bayar tunai atau QRIS saat penukaran tiket
+                    di venue konser
+                  </small>
                 </div>
               </label>
+
             </div>
           </div>
 
           <!-- Total Calculation -->
-          <div class="p-3.5 rounded-4 bg-light border border-warning border-opacity-50 mb-4 d-flex align-items-center justify-content-between">
-            <span class="text-dark font-weight-bold fs-5" style="font-family: 'Fredoka', sans-serif;">Total Tagihan</span>
-            <span id="total_price_calc" class="fs-3 fw-extrabold text-orange" style="font-family: 'Fredoka', sans-serif;">Rp {{ event.ticket_price|rupiah }}</span>
+                    <!-- Total Calculation -->
+          <div class="checkout-total-card mb-4">
+            <div class="checkout-total-icon">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+
+            <div class="checkout-total-information">
+              <span class="checkout-total-label">
+                Total Tagihan
+              </span>
+
+              <small class="checkout-total-description">
+                Sesuai kategori dan jumlah tiket yang dipilih
+              </small>
+            </div>
+
+            <div
+              id="total_price_calc"
+              class="checkout-total-price"
+            >
+              Rp {{ event.ticket_price|rupiah }}
+            </div>
           </div>
 
           <div class="d-flex gap-2">
