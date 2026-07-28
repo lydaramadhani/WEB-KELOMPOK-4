@@ -336,3 +336,444 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: none !important;
   }
 }
+/* ==================================================
+   UTILITY FIXES
+================================================== */
+
+.text-orange {
+  color: var(--text-orange) !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.font-weight-black,
+.fw-extrabold {
+  font-weight: 800 !important;
+}
+
+.opacity-90 {
+  opacity: 0.9 !important;
+}
+
+.leading-relaxed {
+  line-height: 1.75;
+}
+
+
+/* ==================================================
+   FESTIVAL HERO
+================================================== */
+
+.festival-hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2rem, 4vw, 4rem);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 32px;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(255, 255, 255, 0.24),
+      transparent 30%
+    ),
+    linear-gradient(
+      120deg,
+      #ff9a1f 0%,
+      #ff713c 48%,
+      #ff4f62 100%
+    );
+  box-shadow:
+    0 24px 60px rgba(232, 76, 50, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.festival-hero::before {
+  content: "";
+  position: absolute;
+  top: -140px;
+  right: -100px;
+  width: 420px;
+  height: 420px;
+  border: 70px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.festival-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -180px;
+  left: 28%;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: rgba(255, 196, 91, 0.12);
+  pointer-events: none;
+}
+
+.festival-hero > .row {
+  z-index: 1;
+}
+
+
+/* Hero badge */
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1rem;
+  color: #bd480f;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(102, 32, 8, 0.12);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.hero-badge-dot {
+  width: 5px;
+  height: 5px;
+  background: #ff713c;
+  border-radius: 50%;
+}
+
+
+/* Hero typography */
+
+.hero-title {
+  max-width: 760px;
+  margin: 0;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 5.4vw, 5.2rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.hero-subtitle {
+  color: #ffe16a;
+  font-family: "Fredoka", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 700;
+}
+
+.hero-description {
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+
+/* Hero search */
+
+.festival-search {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 1.5fr)
+    minmax(170px, 0.7fr)
+    minmax(160px, 0.6fr);
+  gap: 0.65rem;
+  padding: 0.65rem;
+  max-width: 850px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 16px 35px rgba(112, 32, 15, 0.15);
+}
+
+.festival-search-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0 1rem;
+  background: #ffffff;
+  border: 1px solid #f3d6c8;
+  border-radius: 14px;
+}
+
+.festival-search-control i {
+  flex: 0 0 auto;
+  color: #ff7034;
+}
+
+.festival-search-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.85rem 0;
+  color: var(--text-dark);
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+}
+
+.festival-search-input::placeholder {
+  color: #9c918b;
+}
+
+.festival-search-select {
+  width: 100%;
+  padding: 0.85rem 2.6rem 0.85rem 1rem;
+  color: var(--text-dark);
+  background-color: #ffffff;
+  border: 1px solid #f3d6c8;
+  border-radius: 14px;
+  outline: none;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.festival-search-input:focus,
+.festival-search-select:focus {
+  border-color: #ff713c;
+  box-shadow: 0 0 0 4px rgba(255, 113, 60, 0.14);
+}
+
+.festival-search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1.25rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff713c, #ff4f62);
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(255, 79, 98, 0.28);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.festival-search-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(255, 79, 98, 0.38);
+}
+
+
+/* Highlight card */
+
+.hero-tour-card {
+  width: 100%;
+  max-width: 430px;
+  margin-left: auto;
+  padding: 1.4rem;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  box-shadow: 0 22px 45px rgba(103, 30, 16, 0.18);
+}
+
+.hero-tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero-tour-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  color: #b64b0c;
+  background: #fff0c4;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.hero-tour-count {
+  color: #736964;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.hero-city-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.hero-city-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: #fff8f4;
+  border: 1px solid #fae6dc;
+  border-radius: 15px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.hero-city-item:hover {
+  transform: translateX(3px);
+  background: #ffffff;
+  border-color: #ffc8ad;
+}
+
+.hero-city-information {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.hero-city-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid #f4ded4;
+  border-radius: 12px;
+  font-size: 1.25rem;
+}
+
+.hero-city-information strong {
+  display: block;
+  color: #302824;
+  font-size: 0.95rem;
+}
+
+.hero-city-information small {
+  display: block;
+  margin-top: 0.1rem;
+  color: #7b706a;
+  font-size: 0.76rem;
+}
+
+.hero-city-tag {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.hero-city-tag-red {
+  color: #ffffff;
+  background: #e93e50;
+}
+
+.hero-city-tag-yellow {
+  color: #684500;
+  background: #ffc928;
+}
+
+.hero-city-tag-green {
+  color: #ffffff;
+  background: #18845a;
+}
+
+.hero-ticket-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  color: #654400;
+  background: #ffca28;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+/* ==================================================
+   NAVBAR REFINEMENT
+================================================== */
+
+.soft-nav {
+  padding-top: 0.7rem !important;
+  padding-bottom: 0.7rem !important;
+}
+
+.soft-nav .nav-link {
+  margin: 0 0.15rem;
+  border-radius: 12px;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.soft-nav .nav-link:hover {
+  color: var(--text-orange) !important;
+  background: #fff3ec;
+}
+
+.soft-nav .btn-soft-yellow {
+  padding: 0.55rem 0.85rem;
+  border-radius: 14px;
+}
+
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@media (max-width: 991.98px) {
+  .festival-hero {
+    padding: 2.5rem;
+  }
+
+  .hero-tour-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .festival-hero {
+    padding: 1.5rem;
+    border-radius: 24px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 13vw, 4rem);
+  }
+
+  .festival-search {
+    grid-template-columns: 1fr;
+  }
+
+  .festival-search-control,
+  .festival-search-select,
+  .festival-search-button {
+    min-height: 52px;
+  }
+
+  .hero-tour-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .hero-city-item {
+    align-items: flex-start;
+  }
+
+  .hero-city-information small {
+    line-height: 1.4;
+  }
+}
