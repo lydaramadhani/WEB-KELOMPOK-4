@@ -4,105 +4,164 @@
 
 {% block content %}
 <div class="container py-3 py-md-4">
+<!-- Festival Hero -->
+<section class="festival-hero mb-5">
+  <div class="row align-items-center g-5 position-relative">
 
-  <!-- Balanced & Breathtaking Sunset Hero Banner -->
-  <div class="banner-card p-4 p-md-5 mb-5 position-relative">
-    <div class="row align-items-center gy-4">
-      <div class="col-lg-7 z-1">
-        <span class="badge bg-white text-orange font-weight-bold mb-3 px-3.5 py-2 fs-6 rounded-pill shadow-sm">
-          🌈 Kelompok 4 • Summer Pop Festival 2026 ✨
-        </span>
-        
-        <h1 class="display-3 font-weight-black text-white mb-2" style="font-family: 'Outfit', sans-serif; line-height: 1.05; letter-spacing: -1px;">
-          SUMMER POP FESTIVAL
-        </h1>
-        
-        <div class="fs-4 font-weight-bold text-warning mb-3" style="font-family: 'Fredoka', sans-serif;">
-          Feel The Beat, Enjoy The Moment 🎉
-        </div>
-        
-        <p class="lead text-white opacity-90 mb-4 fs-6 leading-relaxed">
-          Selamat datang di festival musik terbesar tahun 2026! Nikmati 3 event konser spektakuler dengan penataan panggung megah, pilihan kuliner hits, dan penampilan musisi favoritmu di Jakarta, Bali, dan Bandung.
-        </p>
-
-        <!-- Search Bar -->
-        <form method="get" action="{% url 'home' %}#event-catalog" class="search-container row g-2 align-items-center">
-          <div class="col-md-6">
-            <div class="input-group">
-              <span class="input-group-text bg-white border-0 text-orange fs-5"><i class="fa-solid fa-magnifying-glass"></i></span>
-              <input type="text" name="q" value="{{ query }}" class="form-control form-control-lg border-0 shadow-none" placeholder="Cari kota atau venue...">
-            </div>
-          </div>
-          <div class="col-md-3">
-            <select name="status" class="form-select form-select-lg border-0 shadow-none">
-              <option value="">Semua Status</option>
-              <option value="UPCOMING" {% if selected_status == 'UPCOMING' %}selected{% endif %}>Upcoming</option>
-              <option value="ONGOING" {% if selected_status == 'ONGOING' %}selected{% endif %}>Ongoing</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <button type="submit" class="btn btn-coral btn-lg w-100 font-weight-bold py-2.5">
-              Cari Konser 🔍
-            </button>
-          </div>
-        </form>
+    <!-- Hero Content -->
+    <div class="col-lg-7">
+      <div class="hero-badge mb-3">
+        <span>🌈</span>
+        <span>Summer Tour 2026</span>
+        <span class="hero-badge-dot"></span>
+        <span>3 Kota</span>
       </div>
 
-      <!-- Right Side: Festival Highlights Graphic -->
-      <div class="col-lg-5 text-center position-relative z-1">
-        <div class="p-4 rounded-4 bg-white text-dark shadow-lg border border-white border-opacity-30 d-inline-block w-100 text-start" style="border-radius: 28px; max-width: 380px;">
-          
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span class="badge bg-warning bg-opacity-25 text-orange font-weight-bold px-3 py-1.5 rounded-pill">
-              🔥 2026 Tour Highlights
+      <h1 class="hero-title mb-3">
+        SUMMER POP FESTIVAL
+      </h1>
+
+      <p class="hero-subtitle mb-3">
+        Feel The Beat, Enjoy The Moment 🎉
+      </p>
+
+      <p class="hero-description mb-4">
+        Selamat datang di festival musik terbesar tahun 2026.
+        Nikmati tiga konser spektakuler dengan panggung megah,
+        pilihan kuliner menarik, dan penampilan musisi favoritmu
+        di Jakarta, Bali, dan Bandung.
+      </p>
+
+      <!-- Search Event -->
+      <form
+        method="get"
+        action="{% url 'home' %}#event-catalog"
+        class="festival-search"
+      >
+        <div class="festival-search-control">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            class="festival-search-input"
+            placeholder="Cari kota atau venue..."
+          >
+        </div>
+
+        <select
+          name="status"
+          class="festival-search-select"
+          aria-label="Pilih status event"
+        >
+          <option value="">Semua Status</option>
+
+          <option
+            value="UPCOMING"
+            {% if selected_status == 'UPCOMING' %}selected{% endif %}
+          >
+            Upcoming
+          </option>
+
+          <option
+            value="ONGOING"
+            {% if selected_status == 'ONGOING' %}selected{% endif %}
+          >
+            Ongoing
+          </option>
+        </select>
+
+        <button type="submit" class="festival-search-button">
+          <span>Cari Konser</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Tour Highlights -->
+    <div class="col-lg-5">
+      <div class="hero-tour-card">
+
+        <div class="hero-tour-header">
+          <span class="hero-tour-label">
+            <i class="fa-solid fa-fire"></i>
+            Tour Highlights
+          </span>
+
+          <span class="hero-tour-count">
+            3 Kota Tujuan
+          </span>
+        </div>
+
+        <div class="hero-city-list">
+
+          <div class="hero-city-item">
+            <div class="hero-city-information">
+              <div class="hero-city-icon">
+                🏙️
+              </div>
+
+              <div>
+                <strong>Jakarta Edition</strong>
+                <small>Ancol Beach Park • 15–17 Agustus</small>
+              </div>
+            </div>
+
+            <span class="hero-city-tag hero-city-tag-red">
+              Presale
             </span>
-            <span class="text-muted small fw-bold">3 Destination Cities</span>
           </div>
 
-          <!-- Highlight Cities list -->
-          <div class="vstack gap-2 mb-3">
-            <div class="p-2.5 rounded-3 bg-light border border-light d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <span class="fs-4">🏙️</span>
-                <div>
-                  <strong class="text-dark d-block">Jakarta Edition</strong>
-                  <small class="text-muted">Ancol Beach Park • 15-17 Aug</small>
-                </div>
+          <div class="hero-city-item">
+            <div class="hero-city-information">
+              <div class="hero-city-icon">
+                🌴
               </div>
-              <span class="badge bg-danger text-white">Presale</span>
+
+              <div>
+                <strong>Bali Sunset Vibes</strong>
+                <small>GWK Park Bali • 25–27 Agustus</small>
+              </div>
             </div>
 
-            <div class="p-2.5 rounded-3 bg-light border border-light d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <span class="fs-4">🌴</span>
-                <div>
-                  <strong class="text-dark d-block">Bali Sunset Vibes</strong>
-                  <small class="text-muted">GWK Park Bali • 25-27 Aug</small>
-                </div>
-              </div>
-              <span class="badge bg-warning text-dark">Sunset Stage</span>
-            </div>
-
-            <div class="p-2.5 rounded-3 bg-light border border-light d-flex align-items-center justify-content-between">
-              <div class="d-flex align-items-center gap-2">
-                <span class="fs-4">🏕️</span>
-                <div>
-                  <strong class="text-dark d-block">Bandung Breeze</strong>
-                  <small class="text-muted">Lembang Park • 5-7 Sep</small>
-                </div>
-              </div>
-              <span class="badge bg-success text-white">Camp Zone</span>
-            </div>
+            <span class="hero-city-tag hero-city-tag-yellow">
+              Sunset
+            </span>
           </div>
 
-          <div class="p-2.5 rounded-3 bg-warning bg-opacity-15 border border-warning text-center">
-            <small class="text-orange fw-bold">✨ E-Ticket QR Code Terbit Instan Setelah Pembayaran</small>
+          <div class="hero-city-item">
+            <div class="hero-city-information">
+              <div class="hero-city-icon">
+                🏕️
+              </div>
+
+              <div>
+                <strong>Bandung Breeze</strong>
+                <small>Lembang Park • 5–7 September</small>
+              </div>
+            </div>
+
+            <span class="hero-city-tag hero-city-tag-green">
+              Camp
+            </span>
           </div>
 
         </div>
+
+        <div class="hero-ticket-note">
+          <i class="fa-solid fa-ticket"></i>
+
+          <span>
+            E-ticket terbit setelah pembayaran dikonfirmasi
+          </span>
+        </div>
+
       </div>
     </div>
+
   </div>
+</section>
 
   <!-- Category Pills -->
   <div class="d-flex align-items-center gap-2 overflow-x-auto pb-3 mb-4 no-scrollbar">
